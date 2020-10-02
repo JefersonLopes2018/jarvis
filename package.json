@@ -1,0 +1,25 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "jarvis.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "TheLopesBR",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/opus": "^0.1.0",
+    "discord.js": "^12.2.0",
+    "ffbinaries": "^1.1.4",
+    "ffmpeg-static": "^4.1.1",
+    "jimp": "^0.6.8",
+    "lodb": "^0.5.2",
+    "lowdb": "^1.0.0",
+    "opusscript": "0.0.7",
+    "simple-youtube-api": "^5.2.1",
+    "youtube": "^0.1.0",
+    "ytdl-core": "^2.1.0",
+    "ytdl-core-discord": "^1.2.0"
+  }
+}
