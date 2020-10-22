@@ -2,15 +2,13 @@ const Discord = require("discord.js");
 const client = new Discord.Client(); 
 const config = require("./config.json"); 
 const jimp =require("jimp");
-const ytdl = require('ytdl-core');
-const queue = new Map();
-const YouTube = require('simple-youtube-api');
-const youtube = new YouTube("api do yt");
+
 
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 const adapter = new FileSync('banco.json')
 const db = low(adapter)
+
 
 client.on("ready", () => {
   console.log('Estou Pronto para ser usado!');
@@ -18,15 +16,12 @@ client.on("ready", () => {
   client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
 });
 
-
-  
-//sistema de entrada
-
 client.on("guildMemberAdd", async member => {
   client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
   let server = member.guild.id
+  //Canais dos server cadastrados
+
   let Fcanal = client.channels.cache.get("425142094236221440")
-  let Tcanal = client.channels.cache.get("597517143080435713")
 
   let fonte = await jimp.loadFont(jimp.FONT_SANS_32_BLACK)
   let mask = await jimp.read('mascara.png')
@@ -39,40 +34,79 @@ client.on("guildMemberAdd", async member => {
   
   fundo.print(fonte, 170, 175, member.user.username)
   fundo.composite(avatar, 40, 90).write('bemvindo.png')
+
   if(server === "343227251501957121"){
+    //Oficial
     Fcanal.send(``, { files: ["bemvindo.png"] })
     Fcanal.send(`${member}`)
-  }
-  else{
-    Tcanal.send(``, { files: ["bemvindo.png"] })
-    Tcanal.send(`${member}`)
   }
   console.log('Imagem enviada para o Discord')
   })
   .catch(err => {
   console.log('error avatar')
   })
-  const add = await member.roles.add("423629707762728970")
 })
 client.on("guildMemberRemove", member => {
+  let staff = client.channels.cache.get("425150435725279253")
   if (!client.guilds.cache.some(guild => guild.members.cache.has(member.id))) {
       client.users.cache.delete(member.id);
   }
   client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' })
       .catch(console.error);
-  console.log(`${member.username} saiu de nossos servidores`)
+      staff.send(`${member.username} saiu de nossos servidores`)
 });
-client.on("message", async message => {
 
-    //if(message.author.bot) return;
-    if(!message.content.startsWith(config.prefix)) return;
+client.on("message", async message => {
 
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
   const comando = args.shift().toLowerCase();
-//if (!message.guild) return;
+
+  //autenticação 
+  if (comando === 'login'){
+    const busca = await message.fetch("login")
+    busca.delete()
+    let server = message.guild.id
+    const cargo = args[0]
+    const senha = args[1]
+    if(server != '343227251501957121')return message.channel.send('Você está tentando logar fora do servidor!')
+    if(!cargo)return message.channel.send('Não foi informado o cargo pelo qual quer fazer login.')
+    if(cargo === 'membro'){
+      const add = await message.member.roles.add("423629707762728970")
+      const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
+      setTimeout(()=> confirmar.edit("**.**"),2000)
+      setTimeout(()=> confirmar.edit("**..**"),2000);
+      setTimeout(()=> confirmar.edit("**...**"),2000);
+      setTimeout(()=> confirmar.edit(`:inbox_tray: Login feito como **${cargo}**`),3000);
+    }
+    if(cargo === 'byte'){
+      if(senha === 'olaph'){
+        const add = await message.member.roles.add("750434798870462626")
+        const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
+        setTimeout(()=> confirmar.edit("**.**"),2000)
+        setTimeout(()=> confirmar.edit("**..**"),2000);
+        setTimeout(()=> confirmar.edit("**...**"),2000);
+        setTimeout(()=> confirmar.edit(`:inbox_tray: Login feito como **${cargo}**`),3000);
+      }
+      else{
+        message.channel.send(`:x: **Acesso negado!**`)
+      }
+    }
+    if(cargo === 'faculdade'){
+      if(senha === '5725'){
+        const add = await message.member.roles.add("481485196462522388")
+        const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
+        setTimeout(()=> confirmar.edit("**.**"),2000)
+        setTimeout(()=> confirmar.edit("**..**"),2000);
+        setTimeout(()=> confirmar.edit("**...**"),2000);
+        setTimeout(()=> confirmar.edit(`:inbox_tray: Login feito como **${cargo}**`),3000);
+      }
+      else{
+        message.channel.send(`:x: **Acesso negado!**`)
+      }
+    }
+  }
 
   //entrar no canal 
-  
   if(comando === "entrar") {
     const busca = await message.fetch("entrar")
     busca.delete()
@@ -83,7 +117,6 @@ client.on("message", async message => {
       message.reply('OPS!  Não sei onde entrar!! vá até um canal de voz para me mostrar o caminho e me chame novamente!');
     }
   }
-  
   //sair do canal
   if(comando === "sair") {
     const busca = await message.fetch("sair")
@@ -99,10 +132,8 @@ client.on("message", async message => {
      society.send(`${message.author} Me pediu pra sair sem estar na minha call`);
 
   }
-  
 }
 
-  
 //sistema de fala
   if (comando === "falar"){
     const busca = await message.fetch("")
@@ -111,51 +142,51 @@ client.on("message", async message => {
     let mensagem = args.slice(1).join(' ')
     let canal = client.channels.cache.get(id);
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-    canal.send(mensagem)
+      try{canal.send(mensagem)}
+      catch{message.author.send("Não foi possivel enviar a mensagem!")}
     }
   }
-  
-  if (comando === "taberna"){
-    const busca = await message.fetch("")
+  if(comando === "avisar"){
+    const busca = await message.fetch("avisar")
     busca.delete()
-    let taberna = client.channels.cache.get("670066825484042242");
+    let avisos = client.channels.cache.get("392711722172940298");
     const mensagem = args.join(" ");
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-    taberna.send(mensagem).then(message.channel.send("mensagem enviada com sucesso!")).catch(console.error);
+      try{
+          avisos.send(mensagem),
+          message.channel.send("mensagem enviada com sucesso!")}
+      catch{
+        message.author.send("Não foi possivel enviar a mensagem!");
+      }
+      
     }
     else{
-      const f = await message.channel.send(`${message.author} Não recebo ordens de você!!`);
-    }
-  }
-  if(comando === "fsociety"){
-    const busca = await message.fetch("")
-    busca.delete()
-    let society = client.channels.cache.get("393451272034058241");
-    const mensagem = args.join(" ");
-    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-    society.send(mensagem).then(message.channel.send("mensagem enviada com sucesso!")).catch(console.error);
-    }
-    else{
-      const f = await message.channel.send(`${message.author} Não recebo ordens de você!!`);
+      const f = await message.channel.send(`${message.author} Não recebo ordens de você!`);
     }
   }
   if (comando === "diz"){
     const busca = await message.fetch("diz")
     busca.delete()
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872" || message.author.id == "703636663473274962"){
-    const mensagem = args.join(" ");
-    const r = await message.channel.send(mensagem);
-    
+      try{
+        const mensagem = args.join(" ");
+        const r = await message.channel.send(mensagem);}
+      catch{message.author.send("Não foi possivel enviar a mensagem!");}
     }
     else{
-    const f = await message.channel.send(`${message.author} Não recebo ordens de você!!`);
+    const f = await message.channel.send(`${message.author} Não recebo ordens de você!`);
     }
   }
-  if(comando ==="responder"){
-    let staff = client.channels.cache.get("425150435725279253");
-    const msg = `O membro **${message.author.username}** respondeu: \n ${message.content}`
-    staff.send(msg)
-  }
+if(message.channel.type === "dm"){
+  let staff = client.channels.cache.get("425150435725279253");
+    try{
+      const msg = `O membro **${message.author.username}** respondeu: \n ${message.content}`
+      staff.send(msg)}
+    catch{
+      message.author.send("Não foi possivel enviar a mensagem!");
+    }
+    
+}
   if(comando === "privado"){
     const busca = await message.fetch("privado")
     busca.delete()
@@ -164,8 +195,11 @@ client.on("message", async message => {
     let mensagem = args.slice(1).join(' ')
     if(!membro)return message.channel.send("Você não informou um membro!");
     if(!mensagem)return message.channel.send("Você não informou uma mensagem!")
-    membro.send(mensagem).then(message.author.send(`<**${mensagem}**> foi enviada com sucesso para ${membro}!`)).catch(console.error);
-    membro.send("Caso queira responder é só por **?responder** antes da sua resposta que eu repasso a inha equipe, ou você pode deixar só entre nós ;)")
+    try{
+      membro.send(mensagem)
+      message.channel.send(`<**${mensagem}**> foi enviada com sucesso para ${membro}!`)
+    }
+    catch{message.author.send("Não foi possivel enviar a mensagem!");}
     }
   }
   
@@ -177,8 +211,11 @@ client.on("message", async message => {
     let id = args[1]
     let mensagem = args.slice(2).join(' ')
     let canal = client.channels.cache.get(id);
-    const dados = message.author.send(`Sera enviado **${mensagem}** no canal ${canal} daqui a ${time} minutos.`)
+    try{
+    const dados = message.channel.send(`Sera enviado **${mensagem}** no canal ${canal} daqui a ${time} minutos.`)
     setTimeout(()=> canal.send(mensagem),tempo)
+    }
+    catch{message.author.send("Não foi possivel enviar a mensagem!");}
   }
   if(comando === "noticia"){
     const busca = await message.fetch("noticia")
@@ -188,12 +225,18 @@ client.on("message", async message => {
     const texto = args.slice(2).join(' ')
     let canal = client.channels.cache.get("714572433822187571")
     if(!texto){
-      console.log("texto vazio")
+
        texto = ' '
     }
-    canal.send( { files: [imagem] }).then(message.author.send("Noticia postada com sucesso!")).catch(console.error);
+    try{
+    canal.send( { files: [imagem] })
     setTimeout(()=> canal.send(texto),1000)
     setTimeout(()=>canal.send("**Fonte:** " + fonte),2000)
+    message.channel.send("Noticia postada com sucesso!")
+    }
+    catch{
+      message.author.send("Não foi possivel enviar a noticia");
+    }
   }
   if(comando ==="foto"){
     const busca = await message.fetch("foto")
@@ -207,37 +250,47 @@ client.on("message", async message => {
     if(tipo === "canal"){
       let id = args[2]
       let canal = client.channels.cache.get(id)
-      canal.send(mensagem, { files: [link] }).then(message.author.send("Foto enviada com sucesso!")).catch(console.error);
+      try{
+        canal.send(mensagem, { files: [link] })
+        message.channel.send("Foto enviada com sucesso!")
+      }
+      catch{
+        message.author.send("Erro no envio da Foto para o canal!")
+      }
       
     }
     if(tipo === "membro"){
       let membro =  message.mentions.members.first() || message.guild.members.cache.get(args[2])
-      membro.send(mensagem, { files: [link] }).then(message.author.send("Foto enviada com sucesso!")).catch(console.error);
-      
+      try{
+        membro.send(mensagem, { files: [link] }).then(message.author.send("Foto enviada com sucesso!")).catch(console.error);
+      }
+      catch{
+        message.author.send(`Erro no envio da Foto para o ! ${membro}`)
+      }
     }
   }
 
   if (comando === "aqui"){
-    let taberna = client.channels.cache.get("670066825484042242");
-    let society = client.channels.cache.get("393451272034058241");
     const busca = await message.fetch("aqui")
     busca.delete()
-    if(message.guild.id === "343227251501957121"){
-      taberna.send(`${message.author} :loud_sound:  Está em call no servidor ${message.guild}.`)
-      console.log(`${message.author.username} Está em call no servidor ${message.guild}.`)}
-    else{
-      society.send(`${message.author} :loud_sound:  Está em call no servidor ${message.guild}.`)
-      console.log(`${message.author.username} Está em call no servidor ${message.guild}.`)}
-    
+
+    let society = client.channels.cache.get("392711722172940298");
+    society.send(`${message.author} :loud_sound:  Está em call no servidor ${message.guild}.`)
   }
-  if(comando === "jarvis") {
+  if(message.content.startsWith('jarvis')) {
     const busca = await message.fetch("jarvis")
     busca.delete()
+    
     let canal = client.channels.cache.get("425150435725279253");
-    const titulo = args[0]
-    const mensagem = args[1]
-    const m = await message.channel.send(`:slight_smile:  Olá, ${message.author} sua mensagem foi enviada com sucesso!`);
-    canal.send(`Titulo: **${titulo}** Mensagem: **${mensagem}** Author: **${message.author}**`)
+    const mensagem = args.join(' ')
+    
+    try{
+      message.channel.send(`:slight_smile: ${message.author} Opa beleza ?`);
+      canal.send(` Mensagem: **${mensagem}** \n Author: **${message.author}**`)
+    }
+    catch{
+      message.channel.send("Não entendi nada!")
+    }
   }
 //Banco de Dados
   if(comando ==="bservidor"){
@@ -246,7 +299,7 @@ client.on("message", async message => {
     db.set(message.guild.name, []).write()
     message.channel.send("Esse servidor foi adicionado em meu banco de dados.")
   }
-//usuarios comuns
+
   if(comando === "bperfil") {
     const busca = await message.fetch("")
     busca.delete()
@@ -299,7 +352,7 @@ client.on("message", async message => {
     message.author.send(objeto[chave[i]])
     }
   }
-//usuarios vip
+
   if(comando === "blimpar"){
     const busca = await message.fetch("")
     busca.delete()
@@ -328,11 +381,11 @@ client.on("message", async message => {
     cargo.delete().then(message.channel.send("Cargo deletado com sucesso!")).catch(console.error);
   }
 
-    if (comando === "afk"){
+  if (comando === "afk"){
     const busca = await message.fetch("afk")
     busca.delete()
-    if(message.guild.id === "386316232309342209"){
-      message.channel.send("**ATENÇÃO:** Você está fora dos servidores **F SOCIETY**. aqui n existe o cargo base para o sistema **AFK**")
+    if(!message.guild.id === "343227251501957121"){
+      message.channel.send("**ATENÇÃO:** Você está fora dos servidores **F SOCIETY**. aqui não existe o cargo base para o sistema **AFK**")
     }
     else{
     if (!message.member.roles.cache.has("703382637858914353")) {
@@ -343,7 +396,7 @@ client.on("message", async message => {
      setTimeout(()=> confirmar.edit("**...**"),2000);
      setTimeout(()=> confirmar.edit("Seu status foi definido para: :x: **OFFLINE**"),3000);
      console.log(`${message.author.username} Definiu AFK online!`)}
-  else{
+    else{
     const remover = await message.member.roles.remove("703382637858914353")
     const confirmar = await message.channel.send(" :inbox_tray: **CARREGANDO**")
      setTimeout(()=> confirmar.edit("**.**"),2000)
@@ -386,12 +439,12 @@ client.on("message", async message => {
   }
   }
 
-  if(comando === "buscar"){
-    const busca = await message.fetch("buscar")
+  if(comando === "mostrar"){
+    const busca = await message.fetch("mostrar")
     busca.delete()
     const tipo = args[0]
     const nome = args[1]
-    const membro = args[2]
+    membro = message.mentions.members.first() || message.guild.members.cache.get(args[2]) || message.member;
     if(!tipo && !nome){
       const erro = await message.channel.send(`${message.author} Busca invalida!`)
     }
@@ -400,17 +453,22 @@ client.on("message", async message => {
     }
     if(tipo === "data" || tipo ==="Data"){
       if(!nome){
-        const erro = await message.channel.send(`${message.author} Você não informou o que a ser buscado!`)
+        const erro = await message.channel.send(`${message.author} Você não informou o que ser buscado!`)
       }
       else{
         if(nome === "canal"){
           const id = args[2]
           if(!id)return message.channel.send("Você não informou o ID do canal.")
-  
-          message.channel.send(`?diz ?data canal ${id}`)
+            const canal =  client.channels.cache.get(id);
+            const dados =  canal.createdAt
+            let data = dados.toLocaleDateString()
+            message.channel.send(`${canal} foi criado em **${data}**`)
+
         }
         if(nome ==="membro"){
-          message.channel.send(`?diz ?data membro ${membro}`)
+          const dados = membro.user.createdAt
+          let data = dados.toLocaleDateString()
+          message.channel.send(`O membro ${membro} entrou no discord em **${data}**`)
         }
       }
     }
@@ -438,28 +496,7 @@ client.on("message", async message => {
       }
     }
   }
-  if(comando === "data"){
-    const busca = await message.fetch("data")
-    busca.delete()
-    const tipo = args[0]
-    if(!tipo)return message.channel.send("Não informou do que quer saber a data. ")
-    if(tipo === "canal"){
-      const id = args[1]
-      if(!id)return message.channel.send("Você não informou o ID do canal.")
-      const canal =  client.channels.cache.get(id);
-      const dados =  canal.createdAt
-      let data = dados.toLocaleDateString()
-      message.channel.send(`${canal} foi criado em **${data}**`)
-    }
-    if(tipo ==="membro"){
-      membro = message.mentions.members.first() || message.guild.members.cache.get(args[2]) || message.member;
-      const dados = membro.user.createdAt
-      let data = dados.toLocaleDateString()
-      message.channel.send(`O membro ${membro} entrou no discord em **${data}**`)
-    }
-  }
-
-
+  
   //moderação
   if(comando === "apagar"){
     let id = args.join(" ")
@@ -472,7 +509,13 @@ client.on("message", async message => {
         const r = await message.channel.send(`${message.author} Não enviou nenhum ID para eu apagar!`)
           }
       else{
-      const apagarCanal = await canal.delete()}
+        try{
+       const apagarCanal = await canal.delete()
+      }
+      catch{
+        message.author.send("Erro ao apagar canal.")
+      }
+    }
     }
     else{
     const erro = await message.channel.send(`${message.author} Não recebo ordens de você! `)
@@ -483,7 +526,13 @@ client.on("message", async message => {
     busca.delete()
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
       const membro = message.mentions.members.first()
-      const kick = await membro.kick()}
+      try{
+        const kick = await membro.kick()
+      }
+      catch{
+        message.author.send("Erro ao expulsar o membro.")
+      }
+    }
     else{
       const f = await message.channel.send(`${message.author} Não recebo ordens de você!!`);
     }
@@ -497,10 +546,18 @@ client.on("message", async message => {
       let tipo = args[1]
       let categoria = args[2]
   
-      if(!nome && !tipo && !categoria){
-        message.channel.send(`${message.author} Você não Definiu um nome para o canal e o tipo de canal!`)
-      }else{
-        await message.guild.channels.create(nome, {type: tipo, parent: categoria}).catch(console.error);
+      if(!nome){
+        message.channel.send(`${message.author} Tentativa invalida. você não informou o nome.`)
+      }
+      else{
+        try{
+          await message.guild.channels.create(nome, {type: tipo, parent: categoria})
+          message.channel.send("Canal criado com sucesso!")
+        }
+        catch{
+          message.author.send("Erro ao criar canal!")
+          console.log(error)
+        }
       }
     }
   }
@@ -508,21 +565,32 @@ client.on("message", async message => {
   if(comando === "sala"){
     const busca = await message.fetch("sala")
     busca.delete()
-    const categoria = await message.guild.channels.create("🎮SALA", {type: "category"}).catch(console.error);
-    let categoriaID = message.guild.channels.cache.find(c => c.name === "🎮SALA"); 
-    const canal =  await message.guild.channels.create("💬chat", {type: "text" , parent: categoria.id }).catch(console.error);
-    const voice =  await message.guild.channels.create("🔊CHAMADA", {type: "voice" , parent: categoria.id }).catch(console.error);
-  }
+    try{
+      const categoria = await message.guild.channels.create("🎮SALA", {type: "category"}).catch(console.error);
+      let categoriaID = message.guild.channels.cache.find(c => c.name === "🎮SALA"); 
+      const canal =  await message.guild.channels.create("💬chat", {type: "text" , parent: categoria.id }).catch(console.error);
+      const voice =  await message.guild.channels.create("🔊CHAMADA", {type: "voice" , parent: categoria.id }).catch(console.error);
+      message.channel.send("Sala criada!")
+    }
+    catch{
+      message.author.send("Erro ao criar uma sala!")
+    }  
+    }
+
   if(comando ==="salap"){
     const busca = await message.fetch("salap")
     busca.delete()
-    let categoria = message.guild.channels.cache.find(c => c.name === "🎮SALA");
-    let text = message.guild.channels.cache.find(c => c.name === "💬chat");
-    let voice = message.guild.channels.cache.find(c => c.name === "🔊CHAMADA");
-    const apagar = await categoria.delete()
-    const apagar1 = await text.delete()
-    const apagar2 = await voice.delete()
-  }
+    try{
+      let categoria = message.guild.channels.cache.find(c => c.name === "🎮SALA");
+      let text = message.guild.channels.cache.find(c => c.name === "💬chat");
+      let voice = message.guild.channels.cache.find(c => c.name === "🔊CHAMADA");
+      const apagar = await categoria.delete()
+      const apagar1 = await text.delete()
+      const apagar2 = await voice.delete()
+    }
+  catch{
+    message.author.send("Erro ao deletar categoria!")
+  }}
   if(comando === "delete"){
     const busca = await message.fetch("delete")
     busca.delete()
@@ -532,14 +600,28 @@ client.on("message", async message => {
       const erro = await message.channel.send(`${message.author} Não me informou quantas mensagens devo apagar!`)
       }
     else{
-      setTimeout(() => {message.channel.bulkDelete(qt);}, 2000);
+      try{
+        setTimeout(() => {message.channel.bulkDelete(qt);}, 2000);
+      }
+      catch{
+        message.author.send("Erro ao deletar mensagem!!")
+      }
     }
   }
   }
-  if(comando === "encerrar"){
-  client.user.setActivity(`ENCERRANDO...`, { type: 'PLAYING' })
+  if(comando === "state"){
+    const busca = await message.fetch("state")
+    busca.delete()
+    if (args[0] == 'reset'){
+      client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
+    }
+    else{
+    const status = args.join(' ')
+    client.user.setActivity(status, { type: 'PLAYING' })
     .catch(console.error);
+    }
   }
+  
 });
 
 client.login(config.token);
