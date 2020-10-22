@@ -57,7 +57,7 @@ client.on("guildMemberRemove", member => {
 });
 
 client.on("message", async message => {
-
+  if(message.author.bot) return;
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
   const comando = args.shift().toLowerCase();
 
