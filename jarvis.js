@@ -13,7 +13,7 @@ const db = low(adapter)
 client.on("ready", () => {
   console.log('Estou Pronto para ser usado!');
   console.log(`Bot foi iniciado, com ${client.users.cache.size} usuários, em ${client.channels.cache.size} canais, em ${client.guilds.cache.size} servidores.`);
-  client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
+  client.user.setActivity(`${client.channels.cache.size} canais em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
 });
 
 client.on("guildMemberAdd", async member => {
@@ -57,7 +57,9 @@ client.on("guildMemberRemove", member => {
 });
 
 client.on("message", async message => {
+
   if(message.author.bot) return;
+
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
   const comando = args.shift().toLowerCase();
 
@@ -68,24 +70,24 @@ client.on("message", async message => {
     let server = message.guild.id
     const cargo = args[0]
     const senha = args[1]
-    if(server != '343227251501957121')return message.channel.send('Você está tentando logar fora do servidor!')
+    if(server != '343227251501957121')return message.channel.send('Você está tentando logar fora do servidor Oficial!')
     if(!cargo)return message.channel.send('Não foi informado o cargo pelo qual quer fazer login.')
     if(cargo === 'membro'){
       const add = await message.member.roles.add("423629707762728970")
       const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
-      setTimeout(()=> confirmar.edit("**.**"),2000)
+      setTimeout(()=> confirmar.edit("**.**"),1000)
       setTimeout(()=> confirmar.edit("**..**"),2000);
       setTimeout(()=> confirmar.edit("**...**"),2000);
-      setTimeout(()=> confirmar.edit(`:inbox_tray: Login feito como **${cargo}**`),3000);
+      setTimeout(()=> confirmar.edit(`:white_check_mark: Login feito como **${cargo}**`),3000);
     }
     if(cargo === 'byte'){
       if(senha === 'olaph'){
         const add = await message.member.roles.add("750434798870462626")
         const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
-        setTimeout(()=> confirmar.edit("**.**"),2000)
+        setTimeout(()=> confirmar.edit("**.**"),1000)
         setTimeout(()=> confirmar.edit("**..**"),2000);
         setTimeout(()=> confirmar.edit("**...**"),2000);
-        setTimeout(()=> confirmar.edit(`:inbox_tray: Login feito como **${cargo}**`),3000);
+        setTimeout(()=> confirmar.edit(`:white_check_mark: Login feito como **${cargo}**`),3000);
       }
       else{
         message.channel.send(`:x: **Acesso negado!**`)
@@ -95,10 +97,10 @@ client.on("message", async message => {
       if(senha === '5725'){
         const add = await message.member.roles.add("481485196462522388")
         const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
-        setTimeout(()=> confirmar.edit("**.**"),2000)
+        setTimeout(()=> confirmar.edit("**.**"),1000)
         setTimeout(()=> confirmar.edit("**..**"),2000);
         setTimeout(()=> confirmar.edit("**...**"),2000);
-        setTimeout(()=> confirmar.edit(`:inbox_tray: Login feito como **${cargo}**`),3000);
+        setTimeout(()=> confirmar.edit(`:white_check_mark: Login feito como **${cargo}**`),3000);
       }
       else{
         message.channel.send(`:x: **Acesso negado!**`)
@@ -154,7 +156,7 @@ client.on("message", async message => {
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
       try{
           avisos.send(mensagem),
-          message.channel.send("mensagem enviada com sucesso!")}
+          message.channel.send(":white_check_mark: mensagem enviada com sucesso!")}
       catch{
         message.author.send("Não foi possivel enviar a mensagem!");
       }
@@ -222,11 +224,10 @@ if(message.channel.type === "dm"){
     busca.delete()
     const imagem = args[0]
     const fonte = args[1]
-    const texto = args.slice(2).join(' ')
+    let texto = args.slice(2).join(' ')
     let canal = client.channels.cache.get("714572433822187571")
     if(!texto){
-
-       texto = ' '
+       texto = '*'
     }
     try{
     canal.send( { files: [imagem] })
@@ -252,7 +253,7 @@ if(message.channel.type === "dm"){
       let canal = client.channels.cache.get(id)
       try{
         canal.send(mensagem, { files: [link] })
-        message.channel.send("Foto enviada com sucesso!")
+        message.channel.send(" :white_check_mark: Foto enviada com sucesso!")
       }
       catch{
         message.author.send("Erro no envio da Foto para o canal!")
@@ -292,7 +293,7 @@ if(message.channel.type === "dm"){
       message.channel.send("Não entendi nada!")
     }
   }
-//Banco de Dados
+///////////Banco de Dados////////////////
   if(comando ==="bservidor"){
     const busca = await message.fetch("bservidor")
     busca.delete()
@@ -363,7 +364,7 @@ if(message.channel.type === "dm"){
     message.channel.send("Você não tem permissão!")
     }
 }
-  
+////////////////////////////////////////
   
 //cargos 
   if(comando === "newcargo"){
@@ -384,41 +385,49 @@ if(message.channel.type === "dm"){
   if (comando === "afk"){
     const busca = await message.fetch("afk")
     busca.delete()
-    if(!message.guild.id === "343227251501957121"){
+    if(message.guild.id === "343227251501957121"){
+      if (!message.member.roles.cache.has("703382637858914353")) {
+        const add = await message.member.roles.add("703382637858914353")
+        const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
+        setTimeout(()=> confirmar.edit("**.**"),2000)
+        setTimeout(()=> confirmar.edit("**..**"),2000);
+        setTimeout(()=> confirmar.edit("**...**"),2000);
+        setTimeout(()=> confirmar.edit("Seu status foi definido para: :x: **OFFLINE**"),3000);
+      }
+      else{
+        const remover = await message.member.roles.remove("703382637858914353")
+        const confirmar = await message.channel.send(" :inbox_tray: **CARREGANDO**")
+        setTimeout(()=> confirmar.edit("**.**"),2000)
+        setTimeout(()=> confirmar.edit("**..**"),2000);
+        setTimeout(()=> confirmar.edit("**...**"),2000);
+        setTimeout(()=> confirmar.edit("Seu status foi definido para:  :white_check_mark:**ONLINE**"),3000);
+      }
+    }
+    else if(message.guild.id != "343227251501957121"){
       message.channel.send("**ATENÇÃO:** Você está fora dos servidores **F SOCIETY**. aqui não existe o cargo base para o sistema **AFK**")
     }
-    else{
-    if (!message.member.roles.cache.has("703382637858914353")) {
-     const add = await message.member.roles.add("703382637858914353")
-     const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
-     setTimeout(()=> confirmar.edit("**.**"),2000)
-     setTimeout(()=> confirmar.edit("**..**"),2000);
-     setTimeout(()=> confirmar.edit("**...**"),2000);
-     setTimeout(()=> confirmar.edit("Seu status foi definido para: :x: **OFFLINE**"),3000);
-     console.log(`${message.author.username} Definiu AFK online!`)}
-    else{
-    const remover = await message.member.roles.remove("703382637858914353")
-    const confirmar = await message.channel.send(" :inbox_tray: **CARREGANDO**")
-     setTimeout(()=> confirmar.edit("**.**"),2000)
-     setTimeout(()=> confirmar.edit("**..**"),2000);
-     setTimeout(()=> confirmar.edit("**...**"),2000);
-     setTimeout(()=> confirmar.edit("Seu status foi definido para:  :white_check_mark:**ONLINE**"),3000);
-  
-    
-    console.log(`${message.author.username} Definiu AFK offline!`)
- }}
-}
+  }
 // sistema de verificação
   if(comando === "status") {
     const busca = await message.fetch("status")
     busca.delete()
+    const servidores = client.guilds.cache.map(a =>`${a.name}` )
+    if(args[0]=== 'servidores' ){
+      if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+          message.channel.send(`**Servidores cadastrados: ** ${servidores}`)
+          const canais = client.channels.cache.map(a => message.author.send(`${a.name} : ${a.id}\n`) )
+      }
+      else{
+        message.author.send(`Você não tem acesso!`)
+      }
+    }
+    else{
     const status = await message.channel.send(":inbox_tray: **CARREGANDO**");
     setTimeout(()=> status.edit("**.**"),3000)
     setTimeout(()=> status.edit("**..**"),3000);
     setTimeout(()=> status.edit("**...**"),3000);
     setTimeout(() => status.edit(`:bar_chart: Funcionando com ${client.users.cache.size} usuários, em ${client.channels.cache.size} canais e ${client.guilds.cache.size} servidores.`), 4000);
-  
-    console.log(`${message.author.username} Pediu o Status`)
+    }
   }
   if(comando === "verificar"){
     const busca = await message.fetch("verificar")
@@ -429,10 +438,10 @@ if(message.channel.type === "dm"){
     else{
     const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || message.member;
     if (message.member.roles.cache.has("703382637858914353")) {
-      const r = await message.channel.send(":x: Ele está offline")
+      const r = await message.channel.send(":x: offline")
       console.log(`${message.author.username} Verificou se um membro está online. (membro OFF)`)
     } else {
-     const r = await message.channel.send(":white_check_mark:  Ele está online")
+     const r = await message.channel.send(":white_check_mark: online")
      console.log(`${message.author.username} Verificou se um membro está online. (membro ON)`)
      
    }
@@ -445,24 +454,22 @@ if(message.channel.type === "dm"){
     const tipo = args[0]
     const nome = args[1]
     membro = message.mentions.members.first() || message.guild.members.cache.get(args[2]) || message.member;
-    if(!tipo && !nome){
+    if(!tipo){
       const erro = await message.channel.send(`${message.author} Busca invalida!`)
     }
-    if(tipo === "dono" || tipo === "Dono"){
-      const resposta= await message.channel.send(`Criador do servidor: **${message.guild.owner.user.username}**`)
+    else if(tipo === "dono"){
+      const resposta = await message.channel.send(`Criador do servidor: **${message.guild.owner.user.username}**`)
     }
-    if(tipo === "data" || tipo ==="Data"){
-      if(!nome){
-        const erro = await message.channel.send(`${message.author} Você não informou o que ser buscado!`)
-      }
-      else{
+    else if(tipo === "data"){
+        if(!nome)return message.channel.send(`${message.author} Busca invalida!`)
         if(nome === "canal"){
           const id = args[2]
           if(!id)return message.channel.send("Você não informou o ID do canal.")
-            const canal =  client.channels.cache.get(id);
-            const dados =  canal.createdAt
-            let data = dados.toLocaleDateString()
-            message.channel.send(`${canal} foi criado em **${data}**`)
+        
+          const canal =  client.channels.cache.get(id);
+          const dados =  canal.createdAt
+          let data = dados.toLocaleDateString()
+          message.channel.send(`${canal} foi criado em **${data}**`)
 
         }
         if(nome ==="membro"){
@@ -471,32 +478,41 @@ if(message.channel.type === "dm"){
           message.channel.send(`O membro ${membro} entrou no discord em **${data}**`)
         }
       }
-    }
-    if(tipo === "canal" || tipo === "Canal"){
-      if(!nome){
-        const erro = await message.channel.send(`${message.author} Você não informou o nome do canal a ser buscado!`)
-      }
-      else{
+    else if(tipo === "canal"){
+        if(!nome)return message.channel.send(`${message.author} Busca invalida!`)
         if(nome === "lista"){
-            const lista = await message.guild.channels.cache.map((i) => i.name);
-            const enviar = await message.channel.send(lista)
-          }
-          
-        let channel = message.guild.channels.cache.find(c => c.name === nome);
-        if(!channel){
-          if(nome === "lista")return;
-          else{
-          const erro = await message.channel.send(`${message.author} Não encontrei nenhum canal com esse nome.`)
-          }
+          const lista = await message.guild.channels.cache.map((i) => i.name);
+          const enviar = await message.channel.send(lista)
         }
-        
         else{
-          const confirmado = await message.channel.send(`${message.author} Encontrei canal com esse nome. aqui está o ID dele...${channel.id}`)
+          try{
+            let channel = message.guild.channels.cache.find(c => c.name === nome);
+            message.channel.send(`${message.author} Encontrei canal com esse nome. \n ID: ${channel.id}`)
+          }
+          catch{
+            const channelServer = client.channels.cache.map(c => {
+                if(c.name === nome){
+                  return c.id
+                }
+                else{
+                  return false
+                }
+              })
+              var indice = channelServer.indexOf(false)
+              while(indice >= 0){
+                channelServer.splice(indice, 1);
+                var indice = channelServer.indexOf(false);
+                }
+              if(channelServer.length == 0 || channelServer == null){
+                const erro = await message.channel.send('Esse canal não faz parte do meu sistema.')
+              }
+              else{
+                const resposta = await message.channel.send(`${message.author} Encontrei seu canal em outro servidor. \n ID: ${channelServer}`)
+              }
+          }
         }
-      }
     }
   }
-  
   //moderação
   if(comando === "apagar"){
     let id = args.join(" ")
