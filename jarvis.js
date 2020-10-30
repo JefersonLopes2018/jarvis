@@ -293,78 +293,122 @@ if(message.channel.type === "dm"){
       message.channel.send("Não entendi nada!")
     }
   }
-///////////Banco de Dados////////////////
-  if(comando ==="bservidor"){
-    const busca = await message.fetch("bservidor")
-    busca.delete()
-    db.set(message.guild.name, []).write()
-    message.channel.send("Esse servidor foi adicionado em meu banco de dados.")
-  }
-
-  if(comando === "bperfil") {
-    const busca = await message.fetch("")
-    busca.delete()
-    db.get(message.guild.name)
-    .push({
-    id: message.author.id,
-    nick: message.author.username
-  
-    }).write()
-    message.channel.send('Perfil criado com sucesso!')
-  }
-  if(comando === "badd"){
-    const busca = await message.fetch("")
-    busca.delete()
-    if(!args[0])return message.channel.send('Você esqueceu de informar oque vai adicionar. ')
-    if(!args[1])return message.channel.send('Você esqueceu de informar um argumento. ')
-    let novonome = args[1]
-    db.get(message.guild.name)
-    .find({id: message.author.id}).assign({[args[0]]: novonome}).write()
-    message.channel.send('Item adicionado ao seu banco de dados particular.')  
-  }
-  if(comando === "beditar"){
-    const busca = await message.fetch("")
-    busca.delete()
-    if(!args[0])return message.channel.send('Você esqueceu de informar um argumento. ')
-    if(!args[1])return message.channel.send('Você esqueceu de informar um argumento. ')
-    if(args[0] === "id")return message.channel.send('Você Não pode alterar seu ID. ')
-    let novonome = args[1]
-    db.get(message.guild.name)
-    .find({id: message.author.id}).assign({[args[0]]: novonome}).write()
-    message.channel.send('Perfil editado com sucesso!')
- }
-  if(comando ==="bacessar"){
-    const busca = await message.fetch("")
-    busca.delete()
-    
-    let objeto = db.get(message.guild.name).find({id: message.author.id}).value()
-    let chave = Object.keys(objeto)
-    let entrada = args[0]
-    if(!entrada){
-    message.channel.send(`*Você acessou o perfil de* ${message.author} \n -Aqui está seus itens.`)
-    message.channel.send("**-----------------------------------------------------**")
-    message.channel.send(chave)
-    message.channel.send("**-----------------------------------------------------**")
-    message.channel.send(`-Para acessar os itens acima precisa utilizar a chave de acesso de cada item. A chave de acesso é a ordem que o item está na lista.`)
-    }
-    else{
-    let item = entrada * 1000 / 1000
-    let i = item - 1
-    message.author.send(objeto[chave[i]])
-    }
-  }
-
-  if(comando === "blimpar"){
-    const busca = await message.fetch("")
-    busca.delete()
+///////////Banco de Dados NOVO////////////////
+  if(comando === 'newbiblioteca'){
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-    db.get(message.guild.name).remove({id: message.author.id}).write()
+      const busca = await message.fetch("biblioteca")
+      busca.delete()
+      try{
+          const biblioteca = args[0]
+          db.set(biblioteca, []).write()
+          message.channel.send(`:white_check_mark: Biblioteca **${biblioteca}** Criada com sucesso!`)}
+      catch{
+          message.author.send('Erro ao criar biblioteca.')
+      }
     }
     else{
-    message.channel.send("Você não tem permissão!")
+      message.channel.send('Sem permissão!')
     }
-}
+  }
+  if(comando === 'newitem'){
+    const busca = await message.fetch("")
+    busca.delete()
+    const biblioteca = args[0]
+    const nome = args[1]
+    const valor = args[2]
+    try{
+    db.get(biblioteca)
+    .push({
+    id: nome,
+    valor: valor
+    }).write()
+    message.channel.send(`:white_check_mark: ${nome} adicionado a biblioteca ${biblioteca} com sucesso!`)}
+    catch{
+      message.author.send('Erro ao criar o item.')
+    }
+  }
+  if(comando === 'newchave' || comando === 'editchave'){
+    const busca = await message.fetch("")
+    busca.delete()
+    const biblioteca = args[0]
+    const item = args[1]
+    const chave = args[2]
+    const valor = args[3]
+    if(!args[0])return message.channel.send('Você não informou a biblioteca.')
+    if(!args[1])return message.channel.send('Você não informou o item.')
+    if(!args[2])return message.channel.send('Você não informou a chave que quer adicionar.')
+    if(!args[3])return message.channel.send('Você não informou o valor da chave')
+    try{
+    db.get(biblioteca)
+    .find({id: item}).assign({[chave]: valor}).write()
+    message.channel.send(`:white_check_mark: chave ${chave} foi adicionada com sucesso!.`)  
+    }
+    catch{
+      message.author.send('Erro ao adicionar chave.')
+    }
+  }
+  if(comando === 'delitem'){
+    const busca = await message.fetch("")
+    busca.delete()
+    const biblioteca = args[0]
+    const item = args[1]
+    if(!biblioteca)return message.channel.send('Você não informou a biblioteca.')
+    if(!item)return message.channel.send('Você não informou o item.')
+
+    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+      db.get(biblioteca).remove({id: item}).write()
+    }
+    else{
+      message.channel.send("Você não tem permissão!")
+    }
+ }
+  if(comando === 'acessar'){
+    const busca = await message.fetch("")
+    busca.delete()
+    const biblioteca = args[0]
+    const item = args[1]
+    const especificaçao = args[2]
+    if(!item){
+      if(!biblioteca)return message.channel.send('Não informou a biblioteca.')
+      try{
+        let document = db.get(biblioteca).value()
+        for (var i = 0; i < document.length; i++){
+          let objeto2 = document[i]
+          let chave2 = Object.keys(objeto2)
+          message.channel.send((objeto2[chave2[0]]))
+        }
+      }
+      catch{
+          message.channel.send('Erro ao achar a biblioteca informada.')
+      }
+    }
+    else{
+      try{
+      let objeto = db.get(biblioteca).find({id: item}).value()
+      let chave = Object.keys(objeto)
+  
+      for (var i = 0; i < chave.length; i++) {
+        if(!especificaçao){
+          if(chave[i] === 'valor'){
+            message.channel.send(objeto[chave[i]])
+            }
+        }
+        else{
+          if(chave[i]=== especificaçao){
+            message.channel.send(objeto[chave[i]])
+          }
+        }
+      
+      }
+    }
+       catch{
+         message.channel.send('Erro ao achar o item informado.')
+       }
+    }
+  }
+  
 ////////////////////////////////////////
+
   
 //cargos 
   if(comando === "newcargo"){
