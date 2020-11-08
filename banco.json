@@ -1,19 +1,34 @@
 {
-  "F SOCIETY": [
+  "documentação": [
     {
-      "id": "334359138110799872",
-      "nick": "TheLopes",
-      "floresta": "134/70/-546",
-      "templo": "90/72/-741",
-      "ravina": "-251/64/-826",
-      "vila": "-392/75/-935"
+      "id": "python",
+      "valor": "https://docs.python.org/pt-br/3/tutorial/"
     },
     {
-      "id": "363748824013078528",
-      "nick": "michael costa",
-      "idade": "17",
-      "servidor": "FsocietyOficial.aternos.me"
+      "id": "discord.js",
+      "valor": "https://discord.js.org/#/"
     }
   ],
-  "Taberna Sonográfica": []
+  "repositorios": [
+    {
+      "id": "AED2",
+      "valor": "https://github.com/cacioow/calculadora/archive/master.zip"
+    }
+  ],
+  "servidores": [
+    {
+      "id": "343227251501957121",
+      "nome": "F SOCIETY",
+      "canal": "392711722172940298",
+      "cargo": "703382637858914353",
+      "welcome": "425142094236221440"
+    },
+    {
+      "id": "386316232309342209",
+      "nome": "Taberna Sonográfica",
+      "canal": "670066825484042242",
+      "cargo": "774294515749617685"
+    }
+  ]
+
 }

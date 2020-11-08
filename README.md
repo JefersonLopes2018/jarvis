@@ -1,1 +1,1 @@
-Versão Beta
+Versão 1.0

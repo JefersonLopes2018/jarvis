@@ -13,16 +13,12 @@ const db = low(adapter)
 client.on("ready", () => {
   console.log('Estou Pronto para ser usado!');
   console.log(`Bot foi iniciado, com ${client.users.cache.size} usuários, em ${client.channels.cache.size} canais, em ${client.guilds.cache.size} servidores.`);
-  client.user.setActivity(`${client.channels.cache.size} canais em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
+  client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
 });
 
 client.on("guildMemberAdd", async member => {
   client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
   let server = member.guild.id
-  //Canais dos server cadastrados
-
-  let Fcanal = client.channels.cache.get("425142094236221440")
-
   let fonte = await jimp.loadFont(jimp.FONT_SANS_32_BLACK)
   let mask = await jimp.read('mascara.png')
   let fundo = await jimp.read('fundo.png')
@@ -31,14 +27,18 @@ client.on("guildMemberAdd", async member => {
   avatar.resize(130, 130)
   mask.resize(130, 130)
   avatar.mask(mask)
-  
   fundo.print(fonte, 170, 175, member.user.username)
   fundo.composite(avatar, 40, 90).write('bemvindo.png')
 
-  if(server === "343227251501957121"){
-    //Oficial
-    Fcanal.send(``, { files: ["bemvindo.png"] })
-    Fcanal.send(`${member}`)
+  let servidores = db.get('servidores').find({id : server}).value()
+  let chave = Object.keys(servidores)
+  for (var i = 0; i < chave.length; i++){
+    if(chave[i] === 'welcome'){
+      let canal = client.channels.cache.get(servidores[chave[i]])
+      const envio = canal.send(`${member}`, { files: ["bemvindo.png"] })
+      
+  }
+   
   }
   console.log('Imagem enviada para o Discord')
   })
@@ -46,15 +46,35 @@ client.on("guildMemberAdd", async member => {
   console.log('error avatar')
   })
 })
-client.on("guildMemberRemove", member => {
+client.on("guildMemberRemove",async member => {
   let staff = client.channels.cache.get("425150435725279253")
   if (!client.guilds.cache.some(guild => guild.members.cache.has(member.id))) {
       client.users.cache.delete(member.id);
   }
-  client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' })
-      .catch(console.error);
-      staff.send(`${member.username} saiu de nossos servidores`)
+  client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' }).catch(console.error);
+  
+  staff.send(`${member} saiu de nossos servidores`)
 });
+
+client.on("guildCreate", async server => {
+  client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
+  const servidor = server.id
+  const name = server.name
+  const afk = await server.roles.create({ data: {name: 'AFK'},})
+  const id = afk.id
+  db.get('servidores')
+  .push({
+  id: servidor,
+  nome: name,
+  cargo: id
+  }).write()
+  })
+client.on("guildDelete", async server => {
+  client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
+  const servidor = server.id
+  db.get('servidores').remove({id : servidor}).write()
+})
+
 
 client.on("message", async message => {
 
@@ -62,9 +82,10 @@ client.on("message", async message => {
 
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
   const comando = args.shift().toLowerCase();
-
+  
   //autenticação 
   if (comando === 'login'){
+    try{
     const busca = await message.fetch("login")
     busca.delete()
     let server = message.guild.id
@@ -74,19 +95,19 @@ client.on("message", async message => {
     if(!cargo)return message.channel.send('Não foi informado o cargo pelo qual quer fazer login.')
     if(cargo === 'membro'){
       const add = await message.member.roles.add("423629707762728970")
-      const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
+      const confirmar = await message.channel.send(" :arrows_counterclockwise: **CARREGANDO**")
       setTimeout(()=> confirmar.edit("**.**"),1000)
-      setTimeout(()=> confirmar.edit("**..**"),2000);
-      setTimeout(()=> confirmar.edit("**...**"),2000);
+      setTimeout(()=> confirmar.edit("**..**"),1000);
+      setTimeout(()=> confirmar.edit("**...**"),1000);
       setTimeout(()=> confirmar.edit(`:white_check_mark: Login feito como **${cargo}**`),3000);
     }
     if(cargo === 'byte'){
       if(senha === 'olaph'){
         const add = await message.member.roles.add("750434798870462626")
-        const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
+        const confirmar = await message.channel.send(" :arrows_counterclockwise:**CARREGANDO**")
         setTimeout(()=> confirmar.edit("**.**"),1000)
-        setTimeout(()=> confirmar.edit("**..**"),2000);
-        setTimeout(()=> confirmar.edit("**...**"),2000);
+        setTimeout(()=> confirmar.edit("**..**"),1000);
+        setTimeout(()=> confirmar.edit("**...**"),1000);
         setTimeout(()=> confirmar.edit(`:white_check_mark: Login feito como **${cargo}**`),3000);
       }
       else{
@@ -96,10 +117,10 @@ client.on("message", async message => {
     if(cargo === 'faculdade'){
       if(senha === '5725'){
         const add = await message.member.roles.add("481485196462522388")
-        const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
+        const confirmar = await message.channel.send(" :arrows_counterclockwise:**CARREGANDO**")
         setTimeout(()=> confirmar.edit("**.**"),1000)
-        setTimeout(()=> confirmar.edit("**..**"),2000);
-        setTimeout(()=> confirmar.edit("**...**"),2000);
+        setTimeout(()=> confirmar.edit("**..**"),1000);
+        setTimeout(()=> confirmar.edit("**...**"),1000);
         setTimeout(()=> confirmar.edit(`:white_check_mark: Login feito como **${cargo}**`),3000);
       }
       else{
@@ -107,105 +128,83 @@ client.on("message", async message => {
       }
     }
   }
-
-  //entrar no canal 
-  if(comando === "entrar") {
-    const busca = await message.fetch("entrar")
-    busca.delete()
-    if (message.member.voice.channel) {
-      const connection = await message.member.voice.channel.join();
-      console.log(`Entrou em uma chamada a pedido de ${message.author.username}`)
-    } else {
-      message.reply('OPS!  Não sei onde entrar!! vá até um canal de voz para me mostrar o caminho e me chame novamente!');
-    }
+  catch{
+    console.error()
   }
-  //sair do canal
-  if(comando === "sair") {
-    const busca = await message.fetch("sair")
-    busca.delete()
-    if (message.member.voice.channel) {
-     const connection = await message.member.voice.channel.leave();
-     console.log(`${message.author.username} Me pediu pra sair`)
-  } 
-    else{
-     r = await message.channel.send(`${message.author} Você não está no canal, por favor venha me buscar!`)
-     console.log(`${message.author.username} Me pediu pra sair sem estar na minha call`)
-     let society = client.channels.cache.get("425150435725279253");
-     society.send(`${message.author} Me pediu pra sair sem estar na minha call`);
-
   }
-}
-
-//sistema de fala
+  //sistema de fala
   if (comando === "falar"){
+    try{
     const busca = await message.fetch("")
     busca.delete()
     let id = args[0]
     let mensagem = args.slice(1).join(' ')
     let canal = client.channels.cache.get(id);
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-      try{canal.send(mensagem)}
-      catch{message.author.send("Não foi possivel enviar a mensagem!")}
+      try{const envio = await canal.send(mensagem)}
+      catch{const erro = await message.author.send(":x: Não foi possivel enviar a mensagem!")}
     }
+  }catch{
+    console.error()
+  }
   }
   if(comando === "avisar"){
+    try{
     const busca = await message.fetch("avisar")
     busca.delete()
     let avisos = client.channels.cache.get("392711722172940298");
     const mensagem = args.join(" ");
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
       try{
-          avisos.send(mensagem),
-          message.channel.send(":white_check_mark: mensagem enviada com sucesso!")}
+          const envio = await avisos.send(mensagem)
+          const confirmar = await message.channel.send(":white_check_mark:  mensagem enviada com sucesso!")}
       catch{
-        message.author.send("Não foi possivel enviar a mensagem!");
+        const erro = await message.author.send(":x: Não foi possivel enviar a mensagem!");
       }
       
     }
     else{
-      const f = await message.channel.send(`${message.author} Não recebo ordens de você!`);
+      const permissao = await message.channel.send(`${message.author} Não recebo ordens de você!`);
+    }
+    }catch{
+      console.error()
     }
   }
-  if (comando === "diz"){
-    const busca = await message.fetch("diz")
-    busca.delete()
-    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872" || message.author.id == "703636663473274962"){
-      try{
-        const mensagem = args.join(" ");
-        const r = await message.channel.send(mensagem);}
-      catch{message.author.send("Não foi possivel enviar a mensagem!");}
-    }
-    else{
-    const f = await message.channel.send(`${message.author} Não recebo ordens de você!`);
-    }
-  }
-if(message.channel.type === "dm"){
-  let staff = client.channels.cache.get("425150435725279253");
+  if(message.channel.type === "dm"){
+    try{
+    let staff = client.channels.cache.get("425150435725279253");
     try{
       const msg = `O membro **${message.author.username}** respondeu: \n ${message.content}`
-      staff.send(msg)}
+      const envio = await staff.send(msg)}
     catch{
-      message.author.send("Não foi possivel enviar a mensagem!");
+      const erro = await message.author.send(":x: Não foi possivel enviar a mensagem!");
     }
-    
-}
+  }catch{
+    console.error()
+  }
+  }
   if(comando === "privado"){
+    try{
     const busca = await message.fetch("privado")
     busca.delete()
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872" || message.author.id == "703636663473274962"){
-    let membro = message.mentions.members.first() || message.guild.members.cache.get(args[0])
-    let mensagem = args.slice(1).join(' ')
-    if(!membro)return message.channel.send("Você não informou um membro!");
-    if(!mensagem)return message.channel.send("Você não informou uma mensagem!")
-    try{
-      membro.send(mensagem)
-      message.channel.send(`<**${mensagem}**> foi enviada com sucesso para ${membro}!`)
-    }
-    catch{message.author.send("Não foi possivel enviar a mensagem!");}
+      let membro = message.mentions.members.first() || message.guild.members.cache.get(args[0])
+      let mensagem = args.slice(1).join(' ')
+  
+      if(!membro)return await message.channel.send("Você não informou um membro!");
+      if(!mensagem)return await message.channel.send("Você não informou uma mensagem!");
+      try{
+        const envio = await membro.send(mensagem)
+        const confirmar = await message.channel.send(`<**${mensagem}**> foi enviada com sucesso para ${membro}!`)
+        }
+      catch{const erro = await message.author.send(" :frowning2:  Não foi possivel enviar a mensagem!");}
+        }
+    }catch{
+      console.error()
     }
   }
-  
   if(comando ==="time"){
+    try{
     const busca = await message.fetch("time")
     busca.delete()
     let time = args[0]
@@ -214,140 +213,178 @@ if(message.channel.type === "dm"){
     let mensagem = args.slice(2).join(' ')
     let canal = client.channels.cache.get(id);
     try{
-    const dados = message.channel.send(`Sera enviado **${mensagem}** no canal ${canal} daqui a ${time} minutos.`)
+    const dados = await message.channel.send(`:clock2: Sera enviado **${mensagem}** no canal ${canal} daqui a ${time} minutos.`)
     setTimeout(()=> canal.send(mensagem),tempo)
     }
-    catch{message.author.send("Não foi possivel enviar a mensagem!");}
+    catch{const erro = awaitmessage.author.send(":frowning2: Não foi possivel enviar a mensagem!");}
+    }catch{
+      console.error()
+  }
   }
   if(comando === "noticia"){
+    try{
     const busca = await message.fetch("noticia")
     busca.delete()
-    const imagem = args[0]
-    const fonte = args[1]
-    let texto = args.slice(2).join(' ')
-    let canal = client.channels.cache.get("714572433822187571")
-    if(!texto){
-       texto = '*'
-    }
-    try{
-    canal.send( { files: [imagem] })
-    setTimeout(()=> canal.send(texto),1000)
-    setTimeout(()=>canal.send("**Fonte:** " + fonte),2000)
-    message.channel.send("Noticia postada com sucesso!")
+    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+      const imagem = args[0]
+      const fonte = args[1]
+      let texto = args.slice(2).join(' ')
+      let canal = client.channels.cache.get("714572433822187571")
+      try{
+        const envio = await canal.send( { files: [imagem] })
+        if(texto){
+          setTimeout(()=> canal.send(texto),1000)
+        }
+        setTimeout(()=>canal.send("**Fonte:** " + fonte),2000)
+        const confirmar = await message.channel.send(":incoming_envelope: Noticia postada com sucesso!")
     }
     catch{
-      message.author.send("Não foi possivel enviar a noticia");
-    }
+        const erro = await message.author.send(":frowning2: Não foi possivel enviar a noticia");
+    }}
+  }catch{
+    console.error()
+  }
   }
   if(comando ==="foto"){
+    try{
     const busca = await message.fetch("foto")
     busca.delete()
+    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
     let link = args[0]
     let tipo = args[1]
     let mensagem = args.slice(3).join(' ')
     if(!mensagem){
-      let mensagem = ` `
+      let mensagem = ``
     }
     if(tipo === "canal"){
       let id = args[2]
       let canal = client.channels.cache.get(id)
       try{
-        canal.send(mensagem, { files: [link] })
-        message.channel.send(" :white_check_mark: Foto enviada com sucesso!")
+        const envio = await canal.send(mensagem, { files: [link] })
+        const confirmar = await message.channel.send(" :white_check_mark: Foto enviada com sucesso!")
       }
       catch{
-        message.author.send("Erro no envio da Foto para o canal!")
+        const erro = await message.author.send("Erro no envio da Foto para o canal!")
       }
-      
     }
     if(tipo === "membro"){
       let membro =  message.mentions.members.first() || message.guild.members.cache.get(args[2])
       try{
-        membro.send(mensagem, { files: [link] }).then(message.author.send("Foto enviada com sucesso!")).catch(console.error);
+        const envio = await membro.send(mensagem, { files: [link] })
+        await message.channel.send(" :white_check_mark: Foto enviada com sucesso!")
       }
       catch{
-        message.author.send(`Erro no envio da Foto para o ! ${membro}`)
+        const erro = await message.author.send(`Erro no envio da Foto para o ! ${membro}`)
       }
+    }}
+    }catch{
+      console.error()
     }
   }
-
   if (comando === "aqui"){
+    try{
     const busca = await message.fetch("aqui")
     busca.delete()
+    let servidores = db.get('servidores').value()
 
-    let society = client.channels.cache.get("392711722172940298");
-    society.send(`${message.author} :loud_sound:  Está em call no servidor ${message.guild}.`)
+    for (var i = 0; i < servidores.length; i++){
+      let objeto = servidores[i]
+      let chave = Object.keys(objeto)
+      const indicie = chave.indexOf('canal')
+      if(chave[indicie] === 'canal'){
+        let canal = client.channels.cache.get(objeto[chave[indicie]])
+        canal.send(`${message.author} :loud_sound:  Está em call no servidor ${message.guild}.`)
+      }
+    }
+    }catch{
+      console.error()
+    }
   }
   if(message.content.startsWith('jarvis')) {
-    const busca = await message.fetch("jarvis")
-    busca.delete()
-    
-    let canal = client.channels.cache.get("425150435725279253");
-    const mensagem = args.join(' ')
-    
     try{
-      message.channel.send(`:slight_smile: ${message.author} Opa beleza ?`);
-      canal.send(` Mensagem: **${mensagem}** \n Author: **${message.author}**`)
-    }
-    catch{
-      message.channel.send("Não entendi nada!")
+      const busca = await message.fetch("jarvis")
+      busca.delete()
+      let canal = client.channels.cache.get("425150435725279253");
+      const mensagem = args.join(' ')
+      try{
+        const resposta = await message.channel.send(`:slight_smile: ${message.author} Opa beleza ?`);
+        const info = await canal.send(` Mensagem: **${mensagem}** \n Author: **${message.author}**`)
+        }
+      catch{
+        const erro = await message.channel.send(":yawning_face: Não entendi nada!")
+      }
+    }catch{
+      console.error()
     }
   }
-///////////Banco de Dados NOVO////////////////
+///////////Banco de Dados////////////////
   if(comando === 'newbiblioteca'){
-    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+    try{
       const busca = await message.fetch("biblioteca")
       busca.delete()
+    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
       try{
           const biblioteca = args[0]
           db.set(biblioteca, []).write()
-          message.channel.send(`:white_check_mark: Biblioteca **${biblioteca}** Criada com sucesso!`)}
+          const envio = await message.channel.send(`:white_check_mark: Biblioteca **${biblioteca}** Criada com sucesso!`)}
       catch{
-          message.author.send('Erro ao criar biblioteca.')
+        const erro = await message.author.send(':x: Erro ao criar biblioteca.')
       }
     }
     else{
-      message.channel.send('Sem permissão!')
+      const permissao = await message.channel.send('Sem permissão!')
+    }
+    }catch{
+      console.error()
     }
   }
   if(comando === 'newitem'){
-    const busca = await message.fetch("")
-    busca.delete()
-    const biblioteca = args[0]
-    const nome = args[1]
-    const valor = args[2]
     try{
-    db.get(biblioteca)
-    .push({
-    id: nome,
-    valor: valor
-    }).write()
-    message.channel.send(`:white_check_mark: ${nome} adicionado a biblioteca ${biblioteca} com sucesso!`)}
-    catch{
-      message.author.send('Erro ao criar o item.')
-    }
+      const busca = await message.fetch("")
+      busca.delete()
+      const biblioteca = args[0]
+      const nome = args[1]
+      const valor = args[2]
+      try{
+        db.get(biblioteca)
+        .push({
+        id: nome,
+        valor: valor
+        }).write()
+        const envio = await message.channel.send(`:white_check_mark: **${nome}** adicionado a biblioteca ${biblioteca} com sucesso!`)}
+      catch{
+        const erro = await message.author.send(':x: Erro ao criar o item.')
+      }
+  }catch{
+    console.error()
+  }
   }
   if(comando === 'newchave' || comando === 'editchave'){
-    const busca = await message.fetch("")
-    busca.delete()
-    const biblioteca = args[0]
-    const item = args[1]
-    const chave = args[2]
-    const valor = args[3]
-    if(!args[0])return message.channel.send('Você não informou a biblioteca.')
-    if(!args[1])return message.channel.send('Você não informou o item.')
-    if(!args[2])return message.channel.send('Você não informou a chave que quer adicionar.')
-    if(!args[3])return message.channel.send('Você não informou o valor da chave')
     try{
-    db.get(biblioteca)
-    .find({id: item}).assign({[chave]: valor}).write()
-    message.channel.send(`:white_check_mark: chave ${chave} foi adicionada com sucesso!.`)  
-    }
+      const busca = await message.fetch("")
+      busca.delete()
+      const biblioteca = args[0]
+      const item = args[1]
+      const chave = args[2]
+      const valor = args.slice(3).join(' ')
+      if(!args[0])return message.channel.send('Você não informou a biblioteca.')
+      if(!args[1])return message.channel.send('Você não informou o item.')
+      if(!args[2])return message.channel.send('Você não informou a chave que quer adicionar.')
+      if(!args[3])return message.channel.send('Você não informou o valor da chave')
+      try{
+        db.get(biblioteca)
+        .find({id: item}).assign({[chave]: valor}).write()
+        const envio = await message.channel.send(`:white_check_mark: chave ${chave} foi adicionada com sucesso!.`)  
+        }
     catch{
-      message.author.send('Erro ao adicionar chave.')
+      const erro = await message.author.send(':x: Erro ao adicionar chave.')
     }
+  }catch{
+    console.error()
+  }
   }
   if(comando === 'delitem'){
+    try{
     const busca = await message.fetch("")
     busca.delete()
     const biblioteca = args[0]
@@ -357,29 +394,40 @@ if(message.channel.type === "dm"){
 
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
       db.get(biblioteca).remove({id: item}).write()
+      const confirmar = await message.channel.send(':white_check_mark: Item deletado com sucesso!')
     }
     else{
-      message.channel.send("Você não tem permissão!")
+      const permissao = await message.channel.send(":x: Você não tem permissão!")
     }
+  }catch{
+    console.error()
+  }
  }
   if(comando === 'acessar'){
+    try{
     const busca = await message.fetch("")
     busca.delete()
     const biblioteca = args[0]
     const item = args[1]
     const especificaçao = args[2]
     if(!item){
-      if(!biblioteca)return message.channel.send('Não informou a biblioteca.')
+      if(!biblioteca)return message.channel.send(':x: Não informou a biblioteca.')
       try{
         let document = db.get(biblioteca).value()
+        let msg = ' '
         for (var i = 0; i < document.length; i++){
           let objeto2 = document[i]
           let chave2 = Object.keys(objeto2)
-          message.channel.send((objeto2[chave2[0]]))
+          if(biblioteca === 'servidores'){
+            message.channel.send(objeto2[chave2[1]])
+          }
+          else{
+            message.channel.send(objeto2[chave2[0]])
+          }
         }
       }
       catch{
-          message.channel.send('Erro ao achar a biblioteca informada.')
+        const erro = await message.channel.send(':x: Erro ao achar a biblioteca informada.')
       }
     }
     else{
@@ -398,101 +446,140 @@ if(message.channel.type === "dm"){
             message.channel.send(objeto[chave[i]])
           }
         }
-      
       }
     }
        catch{
-         message.channel.send('Erro ao achar o item informado.')
+        const erro = await message.channel.send('Erro ao achar o item informado.')
        }
     }
+  }catch{
+    console.error()
   }
-  
+  }
 ////////////////////////////////////////
 
-  
 //cargos 
   if(comando === "newcargo"){
-    const busca = await message.fetch("newcargo")
-    busca.delete()
-    let nome = args[0]
-    const cargo = await message.guild.roles.create({ data: {
-      name: nome,
-    },}).then(message.channel.send("Cargo criado com sucesso!")).catch(console.error);
+    try{
+        const busca = await message.fetch("newcargo")
+        busca.delete()
+        let nome = args[0]
+        if(!nome)return message.channel.send(':x: Não informou o nome do cargo.')
+          try{
+            const cargo = await message.guild.roles.create({ data: {
+            name: nome,
+            },})
+            await message.author.send(':white_check_mark: Cargo criado com sucesso! ')
+           }
+          catch{
+            const erro = await message.author.send(':x: Erro ao criar o novo cargo.')
+          }
+    }catch{
+      console.error()
+    }
   }
-  if(comando === "excargo"){
-    const busca = await message.fetch("excargo")
-    busca.delete()
-    const cargo = message.mentions.roles.first() || message.guild.roles.cache.get(args[0]) || message.roles;
-    cargo.delete().then(message.channel.send("Cargo deletado com sucesso!")).catch(console.error);
+  if(comando === "delcargo"){
+    try{
+      const busca = await message.fetch("excargo")
+      busca.delete()
+      try{
+        const cargo = message.mentions.roles.first() || message.guild.roles.cache.get(args[0]) || message.roles;
+        cargo.delete()
+        const confirmar = await message.channel.send(":white_check_mark: Cargo deletado com sucesso!")
+      }
+      catch{
+        const erro = await message.author.send(":x: Erro ao deletar o cargo!")
+      }
+    }catch{
+      console.error()
+    }
   }
-
   if (comando === "afk"){
-    const busca = await message.fetch("afk")
-    busca.delete()
-    if(message.guild.id === "343227251501957121"){
-      if (!message.member.roles.cache.has("703382637858914353")) {
-        const add = await message.member.roles.add("703382637858914353")
-        const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
-        setTimeout(()=> confirmar.edit("**.**"),2000)
-        setTimeout(()=> confirmar.edit("**..**"),2000);
-        setTimeout(()=> confirmar.edit("**...**"),2000);
-        setTimeout(()=> confirmar.edit("Seu status foi definido para: :x: **OFFLINE**"),3000);
-      }
-      else{
-        const remover = await message.member.roles.remove("703382637858914353")
-        const confirmar = await message.channel.send(" :inbox_tray: **CARREGANDO**")
-        setTimeout(()=> confirmar.edit("**.**"),2000)
-        setTimeout(()=> confirmar.edit("**..**"),2000);
-        setTimeout(()=> confirmar.edit("**...**"),2000);
-        setTimeout(()=> confirmar.edit("Seu status foi definido para:  :white_check_mark:**ONLINE**"),3000);
-      }
-    }
-    else if(message.guild.id != "343227251501957121"){
-      message.channel.send("**ATENÇÃO:** Você está fora dos servidores **F SOCIETY**. aqui não existe o cargo base para o sistema **AFK**")
-    }
+    try{
+      const busca = await message.fetch("afk")
+      busca.delete()
+      let servidor = db.get('servidores').find({id : message.guild.id}).value()
+      let chave = Object.keys(servidor)
+      for (var i = 0; i < chave.length; i++) {
+        if(chave[i] === 'cargo'){
+          let cargo = message.guild.roles.cache.get(servidor[chave[i]])
+          if(!cargo)return
+          if (!message.member.roles.cache.has(cargo.id)) {
+            const add = await message.member.roles.add(cargo.id)
+            const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
+            setTimeout(()=> confirmar.edit("**.**"),2000)
+            setTimeout(()=> confirmar.edit("**..**"),2000);
+            setTimeout(()=> confirmar.edit("**...**"),2000);
+            setTimeout(()=> confirmar.edit("Seu status foi definido para: :x: **OFFLINE**"),3000);
+          } 
+          else {
+            const remover = await message.member.roles.remove(cargo.id)
+            const confirmar = await message.channel.send(" :inbox_tray: **CARREGANDO**")
+            setTimeout(()=> confirmar.edit("**.**"),2000)
+            setTimeout(()=> confirmar.edit("**..**"),2000);
+            setTimeout(()=> confirmar.edit("**...**"),2000);
+            setTimeout(()=> confirmar.edit("Seu status foi definido para:  :white_check_mark:**ONLINE**"),3000);
+          
+           }
+        }
   }
-// sistema de verificação
-  if(comando === "status") {
+  }catch{
+    console.error()
+  }
+  }
+//sistema de verificação
+  if(comando === "status"){
+    try{
     const busca = await message.fetch("status")
     busca.delete()
     const servidores = client.guilds.cache.map(a =>`${a.name}` )
     if(args[0]=== 'servidores' ){
       if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-          message.channel.send(`**Servidores cadastrados: ** ${servidores}`)
-          const canais = client.channels.cache.map(a => message.author.send(`${a.name} : ${a.id}\n`) )
+          const envio = await message.channel.send(`**Servidores cadastrados: ** ${servidores}`)
+          const canais = client.channels.cache.map(a =>  message.author.send(`${a.name} : ${a.id}\n`))
       }
       else{
-        message.author.send(`Você não tem acesso!`)
+        const permissao = await message.author.send(`:x: Você não tem acesso!`)
       }
     }
     else{
-    const status = await message.channel.send(":inbox_tray: **CARREGANDO**");
-    setTimeout(()=> status.edit("**.**"),3000)
-    setTimeout(()=> status.edit("**..**"),3000);
-    setTimeout(()=> status.edit("**...**"),3000);
-    setTimeout(() => status.edit(`:bar_chart: Funcionando com ${client.users.cache.size} usuários, em ${client.channels.cache.size} canais e ${client.guilds.cache.size} servidores.`), 4000);
-    }
+    const status = await message.channel.send(":arrows_counterclockwise: **CARREGANDO**");
+    setTimeout(()=> status.edit("**.**"),2000)
+    setTimeout(()=> status.edit("**..**"),2000);
+    setTimeout(()=> status.edit("**...**"),2000);
+    setTimeout(() => status.edit(`:bar_chart: Funcionando com ${client.users.cache.size} usuários, em ${client.channels.cache.size} canais, em ${client.guilds.cache.size} servidores.`), 4000);
+  }
+  }catch{
+    console.error()
+  }
   }
   if(comando === "verificar"){
+    try{
     const busca = await message.fetch("verificar")
     busca.delete()
-    if(message.guild.id === "386316232309342209"){
-      message.channel.send("**ATENÇÃO:** Você está fora dos servidores **F SOCIETY**. aqui n existe o cargo base para o sistema **AFK**")
-    }
-    else{
-    const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || message.member;
-    if (message.member.roles.cache.has("703382637858914353")) {
-      const r = await message.channel.send(":x: offline")
-      console.log(`${message.author.username} Verificou se um membro está online. (membro OFF)`)
-    } else {
-     const r = await message.channel.send(":white_check_mark: online")
-     console.log(`${message.author.username} Verificou se um membro está online. (membro ON)`)
-     
-   }
-  }
-  }
 
+    let servidores = db.get('servidores').find({id : message.guild.id}).value()
+    let chave = Object.keys(servidores)
+    const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || message.member;
+    for (var i = 0; i < chave.length; i++) {
+        if(chave[i] === 'cargo'){
+          let cargo = message.guild.roles.cache.get(servidores[chave[i]])
+          if(!cargo)return
+          if (message.member.roles.cache.has(cargo.id)) {
+            const r = await message.channel.send(":x: offline")
+          } 
+          else {
+           const r = await message.channel.send(":white_check_mark: online")
+         }
+          }
+    }
+  }catch{
+    console.error()
+  }
+  }
+  
   if(comando === "mostrar"){
+    try{
     const busca = await message.fetch("mostrar")
     busca.delete()
     const tipo = args[0]
@@ -513,13 +600,13 @@ if(message.channel.type === "dm"){
           const canal =  client.channels.cache.get(id);
           const dados =  canal.createdAt
           let data = dados.toLocaleDateString()
-          message.channel.send(`${canal} foi criado em **${data}**`)
+          const resposta = await message.channel.send(`${canal} foi criado em **${data}**`)
 
         }
         if(nome ==="membro"){
           const dados = membro.user.createdAt
           let data = dados.toLocaleDateString()
-          message.channel.send(`O membro ${membro} entrou no discord em **${data}**`)
+          const resposta = await message.channel.send(`O membro ${membro} entrou no discord em **${data}**`)
         }
       }
     else if(tipo === "canal"){
@@ -531,7 +618,7 @@ if(message.channel.type === "dm"){
         else{
           try{
             let channel = message.guild.channels.cache.find(c => c.name === nome);
-            message.channel.send(`${message.author} Encontrei canal com esse nome. \n ID: ${channel.id}`)
+            const resposta = await message.channel.send(`${message.author} Encontrei canal com esse nome. \n ID: ${channel.id}`)
           }
           catch{
             const channelServer = client.channels.cache.map(c => {
@@ -556,73 +643,13 @@ if(message.channel.type === "dm"){
           }
         }
     }
+  }catch{
+    console.error()
   }
-  //moderação
-  if(comando === "apagar"){
-    let id = args.join(" ")
-    let canal = client.channels.cache.get(id);
-   
-    const busca = await message.fetch("apagar")
-    busca.delete()
-    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-      if(!id){
-        const r = await message.channel.send(`${message.author} Não enviou nenhum ID para eu apagar!`)
-          }
-      else{
-        try{
-       const apagarCanal = await canal.delete()
-      }
-      catch{
-        message.author.send("Erro ao apagar canal.")
-      }
-    }
-    }
-    else{
-    const erro = await message.channel.send(`${message.author} Não recebo ordens de você! `)
-    }
   }
-  if (comando === "kick"){
-    const busca = await message.fetch("kick")
-    busca.delete()
-    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-      const membro = message.mentions.members.first()
-      try{
-        const kick = await membro.kick()
-      }
-      catch{
-        message.author.send("Erro ao expulsar o membro.")
-      }
-    }
-    else{
-      const f = await message.channel.send(`${message.author} Não recebo ordens de você!!`);
-    }
-  }
-  
-  if(comando === "criar"){
-    const busca = await message.fetch("criar")
-    busca.delete()
-    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-      let nome = args[0]
-      let tipo = args[1]
-      let categoria = args[2]
-  
-      if(!nome){
-        message.channel.send(`${message.author} Tentativa invalida. você não informou o nome.`)
-      }
-      else{
-        try{
-          await message.guild.channels.create(nome, {type: tipo, parent: categoria})
-          message.channel.send("Canal criado com sucesso!")
-        }
-        catch{
-          message.author.send("Erro ao criar canal!")
-          console.log(error)
-        }
-      }
-    }
-  }
-
+  //salas
   if(comando === "sala"){
+    try{
     const busca = await message.fetch("sala")
     busca.delete()
     try{
@@ -630,14 +657,17 @@ if(message.channel.type === "dm"){
       let categoriaID = message.guild.channels.cache.find(c => c.name === "🎮SALA"); 
       const canal =  await message.guild.channels.create("💬chat", {type: "text" , parent: categoria.id }).catch(console.error);
       const voice =  await message.guild.channels.create("🔊CHAMADA", {type: "voice" , parent: categoria.id }).catch(console.error);
-      message.channel.send("Sala criada!")
+      const resposta = await message.channel.send(":white_check_mark: Sala criada!")
     }
     catch{
-      message.author.send("Erro ao criar uma sala!")
+      const erro= await message.author.send("Erro ao criar uma sala!")
     }  
+    }catch{
+    console.error()
+  }
     }
-
   if(comando ==="salap"){
+    try{
     const busca = await message.fetch("salap")
     busca.delete()
     try{
@@ -647,11 +677,93 @@ if(message.channel.type === "dm"){
       const apagar = await categoria.delete()
       const apagar1 = await text.delete()
       const apagar2 = await voice.delete()
+      const resposta = await message.channel.send(":white_check_mark: Sala Deletada")
     }
-  catch{
-    message.author.send("Erro ao deletar categoria!")
-  }}
+    catch{
+      const erro = await message.author.send("Erro ao deletar sala!")
+  }
+  }catch{
+  console.error()
+  }
+  }
+  //moderação
+  if(comando === "delchannel"){
+    try{
+    let id = args.join(" ")
+    let canal = client.channels.cache.get(id);
+   
+    const busca = await message.fetch("delchannel")
+    busca.delete()
+    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+      if(!id){
+        const r = await message.channel.send(`${message.author} Não enviou nenhum ID para eu apagar!`)
+          }
+      else{
+        try{
+          const apagarCanal = await canal.delete()
+          await message.channel.send(':white_check_mark: Canal deletado!')
+      }
+      catch{
+        const erro = await message.author.send(":x: Erro ao apagar canal.")
+      }
+    }
+    }
+    else{
+    const erro = await message.channel.send(`${message.author} Não recebo ordens de você! `)
+    }
+    }catch{
+      console.error()
+    }
+  }
+  if(comando === "newchannel"){
+    try{
+    const busca = await message.fetch("newchannel")
+    busca.delete()
+    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+      let nome = args[0]
+      let tipo = args[1]
+      let categoria = args[2]
+  
+      if(!nome){
+        const erro = await message.channel.send(`${message.author} Tentativa invalida. você não informou o nome.`)
+      }
+      else{
+        try{
+          await message.guild.channels.create(nome, {type: tipo, parent: categoria})
+          await message.channel.send(":white_check_mark: Canal criado com sucesso!")
+        }
+        catch{
+          await message.author.send("Erro ao criar canal!")
+        }
+      }
+    }
+  }catch{
+    console.error()
+  }
+  }
+  if (comando === "kick"){
+    try{
+    const busca = await message.fetch("kick")
+    busca.delete()
+    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+      const membro = message.mentions.members.first()
+      try{
+       await membro.kick()
+       await message.channel.send(':white_check_mark: Membro espulso com sucesso!')
+      }
+      catch{
+        await message.author.send(":x: Erro ao expulsar o membro.")
+      }
+    }
+    else{
+       await message.channel.send(`${message.author} Não recebo ordens de você!!`);
+    }
+  }catch{
+    console.error()
+  }
+  }
   if(comando === "delete"){
+    try{
     const busca = await message.fetch("delete")
     busca.delete()
     let qt = args[0]
@@ -664,14 +776,19 @@ if(message.channel.type === "dm"){
         setTimeout(() => {message.channel.bulkDelete(qt);}, 2000);
       }
       catch{
-        message.author.send("Erro ao deletar mensagem!!")
+        await message.author.send("Erro ao deletar mensagem!!")
       }
     }
   }
+  }catch{
+    console.error()
+  }
   }
   if(comando === "state"){
+    try{
     const busca = await message.fetch("state")
     busca.delete()
+    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
     if (args[0] == 'reset'){
       client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
     }
@@ -680,7 +797,11 @@ if(message.channel.type === "dm"){
     client.user.setActivity(status, { type: 'PLAYING' })
     .catch(console.error);
     }
-  }
+    }
+  }catch{
+      console.error()
+    }
+  } 
   
 });
 
