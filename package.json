@@ -1,6 +1,6 @@
 {
-  "name": "jarvis",
-  "version": "1.0",
+  "name": "bot",
+  "version": "1.0.0",
   "description": "",
   "main": "jarvis.js",
   "scripts": {
