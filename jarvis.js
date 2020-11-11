@@ -577,7 +577,6 @@ client.on("message", async message => {
     console.error()
   }
   }
-  
   if(comando === "mostrar"){
     try{
     const busca = await message.fetch("mostrar")
@@ -666,7 +665,7 @@ client.on("message", async message => {
     console.error()
   }
     }
-  if(comando ==="salap"){
+  if(comando ==="delsala"){
     try{
     const busca = await message.fetch("salap")
     busca.delete()
