@@ -174,7 +174,7 @@ client.on("message", async message => {
     try{
     let staff = client.channels.cache.get("425150435725279253");
     try{
-      const msg = `O membro **${message.author.username}** respondeu: \n ${message.content}`
+      const msg = `O membro **${message.author}** respondeu: \n ${message.content}`
       const envio = await staff.send(msg)}
     catch{
       const erro = await message.author.send(":x: Não foi possivel enviar a mensagem!");
@@ -577,6 +577,7 @@ client.on("message", async message => {
     console.error()
   }
   }
+  
   if(comando === "mostrar"){
     try{
     const busca = await message.fetch("mostrar")

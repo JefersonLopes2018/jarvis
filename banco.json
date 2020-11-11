@@ -7,12 +7,24 @@
     {
       "id": "discord.js",
       "valor": "https://discord.js.org/#/"
+    },
+    {
+      "id": "adonis",
+      "valor": "https://adonisjs.com/docs/4.1/installation"
     }
   ],
   "repositorios": [
     {
-      "id": "AED2",
+      "id": "aed2",
       "valor": "https://github.com/cacioow/calculadora/archive/master.zip"
+    },
+    {
+      "id": "linkedin",
+      "valor": "https://github.com/bytejr/linkedin/archive/master.zip"
+    },
+    {
+      "id": "corona",
+      "valor": "https://github.com/bytejr/corona/archive/master.zip"
     }
   ],
   "servidores": [
@@ -24,11 +36,10 @@
       "welcome": "425142094236221440"
     },
     {
-      "id": "386316232309342209",
-      "nome": "Taberna Sonográfica",
-      "canal": "670066825484042242",
-      "cargo": "774294515749617685"
+      "id": "730069592030052376",
+      "nome": "Byte Jr.",
+      "cargo": "775536120565727242",
+      "welcome": "730069592633770007"
     }
   ]
-
 }
