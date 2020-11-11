@@ -22,7 +22,6 @@ O sistema de falas é composto por varios protocolos. Onde sendo a maioria deles
 ```cmd
 ?falar id mensagem
 ```
-Exemplo:
 ```cmd
 ?falar 714609145223053313 Bom dia!
 ```
@@ -30,7 +29,7 @@ Exemplo:
 ```cmd
 ?avisar mensagem
 ```
-Exemplo:
+
 ```cmd
 ?avisar Bom dia!
 ```
@@ -44,8 +43,7 @@ Esse protocolo é acionado automaticamente ao enviar uma mensagem ao privado do 
 
 ```cmd
 ?privado @user mensagem
-```
-Exemplo:
+
 ```cmd
 ?privado @TheLopes Bom Dia!
 ```
@@ -55,7 +53,6 @@ Exemplo:
 ```cmd
 ?time tempo canal mensagem
 ```
-exemplo:
 ```cmd 
 ?time 5 714609145223053313 Bom Dia!
 ```
@@ -66,7 +63,6 @@ exemplo:
 ```cmd
 ?noticia link fonte texto
 ```
-Exemplo:
 ```cmd
 ?noticia https://cdn.discordapp.com/attachments/714573856613859339/773537424021520384/unknown.png http://www.coxinhanerd.com.br/pre-venda-disney-plus/ TEXTO DA NOTICIA 
 ```
@@ -77,13 +73,12 @@ Exemplo:
 ```cmd
 ?foto link tipo membro/canal mensagem
 ```
-exemplo:
--membro
 ```cmd
+-membro
 ?foto https://cdn.discordapp.com/attachments/714573856613859339/773537424021520384/unknown.png membro @TheLopes Foto da noticia
 ```
--canal
 ```cmd
+-canal
 ?foto https://cdn.discordapp.com/attachments/714573856613859339/773537424021520384/unknown.png membro 714609145223053313 Foto da noticia
 ```
 **OBS: O texto/mensagem é opcional**
@@ -102,7 +97,7 @@ exemplo:
 ```cmd
 ?newbiblioteca Nome
 ```
-Exemplo:
+
 ```cmd
 ?newbiblioteca documentação
 ```
@@ -113,7 +108,7 @@ Exemplo:
 ```cmd
 ?newitem biblioteca nome valor
 ```
-Exemplo:
+
 ```cmd
 ?newitem documentação discord.js https://discord.js.org/#/
 ```
@@ -122,7 +117,7 @@ Exemplo:
 ```cmd
 ?newichave biblioteca item nome valor
 ```
-Exemplo:
+
 ```cmd
 ?newchave documentação python data 11/11/2020
 ```
@@ -133,7 +128,7 @@ Exemplo:
 ```cmd
 ?delitem biblioteca item
 ```
-Exemplo:
+
 ```cmd
 ?delitem documentação python
 ```
@@ -145,7 +140,7 @@ Exemplo:
 ?acessar biblioteca item
 ?acessar biblioteca
 ```
-Exemplo:
+
 ```cmd
 ?acessar documentação python data
 ?acessar documentação python
@@ -159,7 +154,7 @@ Exemplo:
 ```cmd
 ?newcargo nome
 ```
-Exemplo:
+
 ```cmd
 ?newcargo moderador
 ```
@@ -169,7 +164,7 @@ Exemplo:
 ```cmd
 ?delcargo @menção
 ```
-exemplo:
+
 ```cmd
 ?delcargo @moderador
 ```
@@ -197,7 +192,7 @@ Admin:
 ```cmd
 ?verificar @user
 ```
-Exemplo:
+
 ```cmd
 ?verificar @TheLopes
 ```
@@ -211,7 +206,7 @@ Exemplo:
 ?mostrar canal lista
 ?mostrar canal nome
 ```
-Exemplo:
+
 ```cmd
 ?mostrar dono
 ?mostrar data canal 424026852097654794
@@ -244,7 +239,7 @@ Exemplo:
 ?newchannel nome tipo 
 ?newchannel nome 
 ```
-Exemplo: 
+
 ```cmd
 ?newchannel regras text 392708440809799692
 ?newchannel regras text 
@@ -262,7 +257,7 @@ Exemplo:
 ```cmd
 ?delchannel id
 ```
-Exemplo:
+
 ```cmd
 ?delchannel 392708440809799692
 ```
@@ -272,7 +267,7 @@ Exemplo:
 ```cmd
 ?kick @user
 ```
-Exemplo:
+
 ```cmd
 ?kick @TheLopes
 ```
@@ -282,7 +277,7 @@ Exemplo:
 ```cmd
 ?delete numero
 ```
-Exemplo:
+
 ```cmd
 ?delete 5
 ```
@@ -293,7 +288,7 @@ Exemplo:
 ?state mensagem
 ?state reset
 ```
-Exemplo:
+
 ```cmd
 ?state Desligando...
 ```
