@@ -3,7 +3,7 @@
 
 Esse comando é utilizado para a liberação de salas conforme o seu login no servidor.
 O login funciona atravez de senha.
-Uso:
+
 ```cmd
 ?login membro
 ```
@@ -18,8 +18,7 @@ Uso:
 # Sistemas de fala 
 
 O sistema de falas é composto por varios protocolos. Onde sendo a maioria deles acionado pela a Equipe do J-A-R-V-I-S.
-1. Fala 
-uso: 
+1. Fala  
 ```cmd
 ?falar id mensagem
 ```
@@ -28,7 +27,6 @@ Exemplo:
 ?falar 714609145223053313 Bom dia!
 ```
 2. Avisos
-uso:
 ```cmd
 ?avisar mensagem
 ```
@@ -39,10 +37,11 @@ Exemplo:
 **OBS: Esse aviso será enviado ao canal de avisos do servidor oficial do J-A-R-V-I-S**
 
 3. DM 
+```cmd
 Esse protocolo é acionado automaticamente ao enviar uma mensagem ao privado do bot.
-
+```
 4. Privado
-uso:
+
 ```cmd
 ?privado @user mensagem
 ```
@@ -52,7 +51,7 @@ Exemplo:
 ```
 
 5. Timer
-uso:
+
 ```cmd
 ?time tempo canal mensagem
 ```
@@ -63,18 +62,18 @@ exemplo:
 **OBS: O tempo é em minutos**
 
 6. Noticia
-uso:
+
 ```cmd
 ?noticia link fonte texto
 ```
-exemplo:
+Exemplo:
 ```cmd
 ?noticia https://cdn.discordapp.com/attachments/714573856613859339/773537424021520384/unknown.png http://www.coxinhanerd.com.br/pre-venda-disney-plus/ TEXTO DA NOTICIA 
 ```
 **OBS: O texto é opcional**
 
 7. Fotos
-uso:
+
 ```cmd
 ?foto link tipo membro/canal mensagem
 ```
@@ -90,7 +89,7 @@ exemplo:
 **OBS: O texto/mensagem é opcional**
 
 8. Avisos de chamada
-uso: 
+
 ```cmd
 ?aqui
 ```
@@ -99,7 +98,7 @@ uso:
 # Banco de Dados
 
 1. Criação da biblioteca
-uso:
+
 ```cmd
 ?newbiblioteca Nome
 ```
@@ -110,7 +109,7 @@ Exemplo:
 **OBS: Uma vez criada, não terá como ser removida.**
 
 2. Criação de um item 
-uso:
+
 ```cmd
 ?newitem biblioteca nome valor
 ```
@@ -119,7 +118,7 @@ Exemplo:
 ?newitem documentação discord.js https://discord.js.org/#/
 ```
 3. Criação ou edição de uma chave
-uso: 
+
 ```cmd
 ?newichave biblioteca item nome valor
 ```
@@ -130,7 +129,7 @@ Exemplo:
 **OBS Esse comando aceita a chamada com ?editchave, já que uma vez que existe a chave no banco de dados, o valor dela será substituido pelo valor informado na chamada. Uma vez criada NÃO tem como ser removida.**
 
 4. Deletar um item
-uso: 
+
 ```cmd
 ?delitem biblioteca item
 ```
@@ -140,7 +139,7 @@ Exemplo:
 ```
 
 5. Acessar o Banco de Dados
-Esse protocolo tem varios casos de uso.
+
 ```cmd
 ?acessar biblioteca item especificação
 ?acessar biblioteca item
@@ -156,7 +155,7 @@ Exemplo:
 # Cargos
 
 1. Criar um cargo
-uso:
+
 ```cmd
 ?newcargo nome
 ```
@@ -166,7 +165,7 @@ Exemplo:
 ```
 
 2. Deletar um cargo
-uso:
+
 ```cmd
 ?delcargo @menção
 ```
@@ -176,7 +175,7 @@ exemplo:
 ```
 
 3. Sistema AFK
-uso:
+
 ```cmd
 ?afk
 ```
@@ -185,7 +184,7 @@ uso:
 # Sistema de Verificação
 
 1. Status do J-A-R-V-I-S
-uso:
+
 ```cmd
 ?status```
 Admin:
@@ -194,7 +193,7 @@ Admin:
 ```
 
 2. Verificar sistema AFK
-uso:
+
 ```cmd
 ?verificar @user
 ```
@@ -204,7 +203,7 @@ Exemplo:
 ```
 
 3. Busca 
-uso:
+
 ```cmd
 ?mostrar dono
 ?mostrar data canal id
@@ -224,13 +223,13 @@ Exemplo:
 # Sistema de salas
 
 1. Criar uma sala
-uso:
+
 ```cmd
 ?sala
 ```
 
 2. Deletar a sala
-uso:
+
 ```cmd
 ?delsala
 ```
@@ -239,7 +238,7 @@ uso:
 
 **OBS: Somente a equipe do jarvis consegue executar os protocolos abaixo**
 1. Criar um canal
-uso:
+
 ```cmd
 ?newchannel nome tipo categoria
 ?newchannel nome tipo 
@@ -259,7 +258,7 @@ Exemplo:
 **OBS: Quando não especificado, ele irá criar no default, tipo: text**
 
 2. Deletar um canal
-uso:
+
 ```cmd
 ?delchannel id
 ```
@@ -268,7 +267,7 @@ Exemplo:
 ?delchannel 392708440809799692
 ```
 3. Expulsar um membro 
-uso:
+
 
 ```cmd
 ?kick @user
@@ -279,7 +278,7 @@ Exemplo:
 ```
 
 4. Apagar mensagens
-uso:
+
 ```cmd
 ?delete numero
 ```
@@ -289,7 +288,7 @@ Exemplo:
 ```
 
 5. Status do perfil do J-A-R-V-I-S
-uso:
+
 ```cmd
 ?state mensagem
 ?state reset
