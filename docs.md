@@ -43,7 +43,7 @@ Esse protocolo é acionado automaticamente ao enviar uma mensagem ao privado do 
 
 ```cmd
 ?privado @user mensagem
-
+```
 ```cmd
 ?privado @TheLopes Bom Dia!
 ```
@@ -79,7 +79,7 @@ Esse protocolo é acionado automaticamente ao enviar uma mensagem ao privado do 
 ```
 ```cmd
 -canal
-?foto https://cdn.discordapp.com/attachments/714573856613859339/773537424021520384/unknown.png membro 714609145223053313 Foto da noticia
+?foto https://cdn.discordapp.com/attachments/714573856613859339/773537424021520384/unknown.png canal 714609145223053313 Foto da noticia
 ```
 **OBS: O texto/mensagem é opcional**
 
@@ -88,7 +88,7 @@ Esse protocolo é acionado automaticamente ao enviar uma mensagem ao privado do 
 ```cmd
 ?aqui
 ```
-**OBS: Ele ira mandar um aviso em todos os servidores com canais cadastrados no banco de dados, caso não houver umn canal ele irá ignorar.**
+**OBS: Ele ira mandar um aviso em todos os servidores com canais cadastrados no banco de dados, caso não houver um canal ele irá ignorar.**
 
 # Banco de Dados
 
@@ -115,7 +115,7 @@ Esse protocolo é acionado automaticamente ao enviar uma mensagem ao privado do 
 3. Criação ou edição de uma chave
 
 ```cmd
-?newichave biblioteca item nome valor
+?newchave biblioteca item nome valor
 ```
 
 ```cmd
@@ -181,9 +181,10 @@ Esse protocolo é acionado automaticamente ao enviar uma mensagem ao privado do 
 1. Status do J-A-R-V-I-S
 
 ```cmd
-?status```
-Admin:
+?status
+```
 ```cmd
+Admin:
 ?status servidores
 ```
 
