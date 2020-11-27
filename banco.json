@@ -6,17 +6,21 @@
     },
     {
       "id": "discord.js",
-      "valor": "https://discord.js.org/#/"
+      "valor": "https://discord.js.org/#/docs/main/stable/general/welcome"
     },
     {
       "id": "adonis",
       "valor": "https://adonisjs.com/docs/4.1/installation"
+    },
+    {
+      "id": "jarvis",
+      "valor": "https://github.com/JefersonLopes2018/jarvis/blob/documentação/docs.md"
     }
   ],
   "repositorios": [
     {
       "id": "aed2",
-      "valor": "https://github.com/cacioow/calculadora/archive/master.zip"
+      "valor": "https://github.com/cacioow/AED2/archive/master.zip"
     },
     {
       "id": "linkedin",
@@ -25,6 +29,10 @@
     {
       "id": "corona",
       "valor": "https://github.com/bytejr/corona/archive/master.zip"
+    },
+    {
+      "id": "rocketseat",
+      "valor": "https://github.com/Rocketseat/awesome"
     }
   ],
   "servidores": [
@@ -40,6 +48,13 @@
       "nome": "Byte Jr.",
       "cargo": "775536120565727242",
       "welcome": "730069592633770007"
+    },
+    {
+      "id": "677258249971433492",
+      "nome": "Cidade Luminosa",
+      "cargo": "779832200752529418",
+      "canal": "677710176761020426",
+      "welcome": "677708741294161946"
     }
   ]
 }
