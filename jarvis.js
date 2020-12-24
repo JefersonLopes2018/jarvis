@@ -700,27 +700,35 @@ client.on("message", async message => {
 //voz
 if(comando ==='play'){
   let Canalvoz = message.member.voice.channel;
-  if(!args[0]){
-    erro.setDescription('Não informou oque quer tocar')
-    const envio = await message.channel.send(erro)
-    envio.delete(3000)
-  }
-  let validate = ytdl.validateURL(args[0]);
-  let info = await ytdl.getInfo(args[0]);
+  if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+    if(!args[0]){
+      erro.setDescription('Não informou oque quer tocar')
+      const envio = await message.channel.send(erro)
+      envio.delete(3000)
+    }
+    let validate = ytdl.validateURL(args[0]);
+    let info = await ytdl.getInfo(args[0]);
   
-  if (!validate){
-    erro.setDescription('Não informou oque quer tocar')
-    const envio = await message.channel.send(erro)
-    envio.delete(3000)
+    if (!validate){
+      erro.setDescription('Não informou oque quer tocar')
+      const envio = await message.channel.send(erro)
+      envio.delete(3000)
+    }
+    Canalvoz.join()
+      .then(connection => {
+      const url = ytdl(args.join(' '), { filter: 'audioonly' });
+      const dispatcher = connection.play(url);
+      connection.play(url)
+    }).catch(console.error);
   }
-  Canalvoz.join()
-  .then(connection => {
-    const url = ytdl(args.join(' '), { filter: 'audioonly' });
+ else{
+    Canalvoz.join()
+    .then(connection => {
+    const url = ytdl('https://youtu.be/vxT-RCl6cvs', { filter: 'audioonly' });
     const dispatcher = connection.play(url);
     connection.play(url)
-  }).catch(console.error);
-  
-
+    }).catch(console.error);
+ }
 }
 //cargos 
   if(comando === "newcargo"){
