@@ -4,16 +4,21 @@
   "description": "",
   "main": "jarvis.js",
   "scripts": {
-    "start": "node jarvis.js"
+    "start": "nodemon jarvis.js"
   },
   "author": "TheLopesBR",
   "license": "ISC",
   "dependencies": {
-    "discord.js": "^12.2.0",
+    "discord.js": "^12.5.1",
     "ffbinaries": "^1.1.4",
     "ffmpeg-static": "^4.1.1",
-    "jimp": "^0.6.8",
-    "lodb": "^0.5.2",
-    "lowdb": "^1.0.0"
+    "jimp": "^0.16.1",
+    "lowdb": "^1.0.0",
+    "opusscript": "0.0.7",
+    "simple-youtube-api": "^5.2.1",
+    "ytdl-core": "^4.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.6"
   }
 }

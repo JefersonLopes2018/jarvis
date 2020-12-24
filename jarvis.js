@@ -1,14 +1,18 @@
 const Discord = require("discord.js"); 
+const {MessageEmbed} = require('discord.js');
 const client = new Discord.Client(); 
 const config = require("./config.json"); 
 const jimp =require("jimp");
-
 
 const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 const adapter = new FileSync('banco.json')
 const db = low(adapter)
 
+const queue = new Map();
+const YouTube = require('simple-youtube-api');
+const ytdl = require('ytdl-core');
+const youtube = new YouTube("api do yt");
 
 client.on("ready", () => {
   console.log('Estou Pronto para ser usado!');
@@ -53,20 +57,17 @@ client.on("guildMemberRemove",async member => {
   }
   client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' }).catch(console.error);
   
-  staff.send(`${member} saiu de nossos servidores`)
+  staff.send(`**${member.user.username}** saiu do servidor **${member.guild}**`)
 });
 
 client.on("guildCreate", async server => {
   client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
   const servidor = server.id
   const name = server.name
-  const afk = await server.roles.create({ data: {name: 'AFK'},})
-  const id = afk.id
   db.get('servidores')
   .push({
   id: servidor,
-  nome: name,
-  cargo: id
+  nome: name
   }).write()
   })
 client.on("guildDelete", async server => {
@@ -75,14 +76,34 @@ client.on("guildDelete", async server => {
   db.get('servidores').remove({id : servidor}).write()
 })
 
-
 client.on("message", async message => {
-
-  if(message.author.bot) return;
-
+  //Config 
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
   const comando = args.shift().toLowerCase();
-  
+  const Cor = '#6A5ACD'
+  const consoleServer = client.channels.cache.get("425150435725279253");
+  const erro = new MessageEmbed()
+      .setTitle('ERRO!')
+      .setColor('#FF0000')
+      .setThumbnail('https://cdn.discordapp.com/attachments/714573856613859339/789552509903044638/erro.png')
+      .setTimestamp()
+      .setFooter('Covil', 'https://cdn.discordapp.com/attachments/425141386266935296/782306680759124028/icone.png');
+  if(message.author.bot) return;
+  if (message.channel.type != "dm" && !message.content.startsWith('jarvis') && !message.content.startsWith(config.prefix)){
+    if(message.mentions.members.first()) {
+      if(message.mentions.members.first().id === '703636663473274962'){
+        await message.channel.send(`${message.author} Opa tranquilo?`)
+        await consoleServer.send(`${message.author} Me mencionou no canal ${message.channel}`)
+      }
+      else if(message.mentions.members.first().id === '334359138110799872'){
+        await message.channel.send(`${message.author} Já avisei ele, daqui a pouco ele aparece.`)
+        await message.mentions.members.first().send(`${message.author} Te chamou no canal ${message.channel}`)
+      }
+    }
+    else{
+      return 
+    }
+  }
   //autenticação 
   if (comando === 'login'){
     try{
@@ -91,44 +112,81 @@ client.on("message", async message => {
     let server = message.guild.id
     const cargo = args[0]
     const senha = args[1]
-    if(server != '343227251501957121')return message.channel.send('Você está tentando logar fora do servidor Oficial!')
-    if(!cargo)return message.channel.send('Não foi informado o cargo pelo qual quer fazer login.')
+    if(server != '343227251501957121'){
+      erro.setDescription('Você está tentando logar fora do servidor Oficial')
+      envio = await message.channel.send(erro)
+      setTimeout(() =>  envio.delete(),3000)
+     
+    }
+    else if(!cargo){
+      const logado = ['✅','✅','✅']
+      if(!message.member.roles.cache.has('423629707762728970')){
+        logado[0] = '❌'
+      }
+      if(!message.member.roles.cache.has('750434798870462626')){
+        logado[1] = '❌'
+      }
+      if(!message.member.roles.cache.has('481485196462522388')){
+        logado[2] = '❌'
+      }
+      const login = new MessageEmbed()
+            .setAuthor(message.guild.name,message.guild.iconURL(),'https://discord.gg/RXNTwcW')
+            .setColor(Cor)
+            .setTimestamp()
+            .setThumbnail(message.author.avatarURL())
+            .addFields(
+              { name: 'Membro', value: logado[0],inline: true},
+              { name: 'Byte', value: logado[1], inline: true },
+              { name: 'Estudante', value: logado[2], inline: true },
+            )
+            
+      await message.channel.send(login)
+    }
     if(cargo === 'membro'){
-      const add = await message.member.roles.add("423629707762728970")
-      const confirmar = await message.channel.send(" :arrows_counterclockwise: **CARREGANDO**")
-      setTimeout(()=> confirmar.edit("**.**"),1000)
-      setTimeout(()=> confirmar.edit("**..**"),1000);
-      setTimeout(()=> confirmar.edit("**...**"),1000);
-      setTimeout(()=> confirmar.edit(`:white_check_mark: Login feito como **${cargo}**`),3000);
+      const embedMembro = new MessageEmbed()
+      .setTitle(`:white_check_mark: Logado como ${cargo}`)
+      .setColor(Cor)
+      .setTimestamp()
+      .setThumbnail('https://cdn.discordapp.com/attachments/425141386266935296/782306680759124028/icone.png')
+      await message.member.roles.add("423629707762728970")
+      const envio = await message.channel.send(embedMembro)
+      setTimeout(() =>  envio.delete(),5000)
+  
     }
     if(cargo === 'byte'){
       if(senha === 'olaph'){
-        const add = await message.member.roles.add("750434798870462626")
-        const confirmar = await message.channel.send(" :arrows_counterclockwise:**CARREGANDO**")
-        setTimeout(()=> confirmar.edit("**.**"),1000)
-        setTimeout(()=> confirmar.edit("**..**"),1000);
-        setTimeout(()=> confirmar.edit("**...**"),1000);
-        setTimeout(()=> confirmar.edit(`:white_check_mark: Login feito como **${cargo}**`),3000);
+        const embedMembro = new MessageEmbed()
+        .setTitle(`:white_check_mark: Logado como ${cargo}`)
+        .setColor(Cor)
+        .setTimestamp()
+        .setThumbnail('https://cdn.discordapp.com/attachments/714573856613859339/789222134853271603/byte.png')
+        await message.member.roles.add("750434798870462626")
+        const envio = await message.channel.send(embedMembro)
+        setTimeout(() =>  envio.delete(),5000)
       }
       else{
-        message.channel.send(`:x: **Acesso negado!**`)
+        await message.channel.send(`:x: **Acesso negado!**`)
       }
     }
-    if(cargo === 'faculdade'){
+    if(cargo === 'estudante'){
       if(senha === '5725'){
-        const add = await message.member.roles.add("481485196462522388")
-        const confirmar = await message.channel.send(" :arrows_counterclockwise:**CARREGANDO**")
-        setTimeout(()=> confirmar.edit("**.**"),1000)
-        setTimeout(()=> confirmar.edit("**..**"),1000);
-        setTimeout(()=> confirmar.edit("**...**"),1000);
-        setTimeout(()=> confirmar.edit(`:white_check_mark: Login feito como **${cargo}**`),3000);
+        const embedMembro = new MessageEmbed()
+        .setTitle(`:white_check_mark: Logado como ${cargo}`)
+        .setColor(Cor)
+        .setTimestamp()
+        .setThumbnail('https://cdn.discordapp.com/attachments/425141386266935296/435928628908523520/book_stack_pc_1600_clr_3258.png')
+        await message.member.roles.add("481485196462522388")
+        const envio = await message.channel.send(embedMembro)
+        setTimeout(() =>  envio.delete(),5000)
       }
       else{
-        message.channel.send(`:x: **Acesso negado!**`)
+        await message.channel.send(`:x: **Acesso negado!**`)
       }
     }
   }
   catch{
+    erro.setDescription('Não foi possivel fazer login')
+    await message.author.send(erro);
     console.error()
   }
   }
@@ -141,12 +199,59 @@ client.on("message", async message => {
     let mensagem = args.slice(1).join(' ')
     let canal = client.channels.cache.get(id);
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-      try{const envio = await canal.send(mensagem)}
-      catch{const erro = await message.author.send(":x: Não foi possivel enviar a mensagem!")}
+      try{
+        await canal.send(mensagem)
+        consoleServer.send(`<${mensagem}> enviada para ${canal}`)}
+      catch{
+        erro.setDescription("Não foi possivel enviar a mensagem!")
+        await message.author.send(erro)
+      }
     }
   }catch{
+    erro.setDescription('Não foi possivel enviar a mensagem')
+    await message.author.send(erro);
     console.error()
   }
+  }
+  if(comando === "editar" || comando === "excluir"){
+    try{
+      const busca = await message.fetch()
+      busca.delete()
+      const canal = await  client.channels.cache.get(args[0])
+      const msg = await canal.messages.fetch(args[1])
+      msgNew = args.slice(2).join(' ')
+      if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+      if(msgNew){
+        try{
+          msg.edit(msgNew)
+          consoleServer.send(`<**${msg.content}**> Foi editada para <**${msgNew}**>`)
+        }
+        catch{
+          erro.setDescription('Erro ao editar a mensagem')
+          message.author.send(erro)
+        }
+      }
+      else{
+        try{
+          consoleServer.send(`<**${msg.content}**> Deletada`)
+          msg.delete()
+        }
+        catch{
+          erro.setDescription('Erro ao deletar a mensagem')
+          message.author.send(erro)
+        }
+      }
+    }
+    else{
+      erro.setDescription('Sem permissão')
+      message.author.send(erro)
+    }
+    }catch{
+      erro.setDescription('Não foi possivel editar/deletar a mensagem')
+      message.author.send(erro)
+      console.error()
+    }
+    
   }
   if(comando === "avisar"){
     try{
@@ -156,29 +261,34 @@ client.on("message", async message => {
     const mensagem = args.join(" ");
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
       try{
-          const envio = await avisos.send(mensagem)
-          const confirmar = await message.channel.send(":white_check_mark:  mensagem enviada com sucesso!")}
+          await avisos.send(mensagem)
+          consoleServer.send(":white_check_mark:  mensagem enviada com sucesso!")}
       catch{
-        const erro = await message.author.send(":x: Não foi possivel enviar a mensagem!");
+         erro.setDescription('Não foi possivel enviar a mensagem')
+         await message.author.send(erro);
       }
       
     }
     else{
-      const permissao = await message.channel.send(`${message.author} Não recebo ordens de você!`);
+      erro.setDescription('Você não tem permissão')
+      await message.author.send(erro);
     }
     }catch{
+      erro.setDescription('Não foi possivel enviar a mensagem')
+      await message.author.send(erro);
       console.error()
     }
   }
   if(message.channel.type === "dm"){
     try{
-    let staff = client.channels.cache.get("425150435725279253");
-    try{
-      const msg = `O membro **${message.author}** respondeu: \n ${message.content}`
-      const envio = await staff.send(msg)}
-    catch{
-      const erro = await message.author.send(":x: Não foi possivel enviar a mensagem!");
-    }
+      try{
+        const msg = `O membro **${message.author}** respondeu: \n ${message.content}`
+        await consoleServer.send(msg)}
+      catch{
+        erro.setDescription('Foi identificado uma mensagem no DM, porem não consegui enviar pro console.')
+        await consoleServer.send(erro);
+        
+      }
   }catch{
     console.error()
   }
@@ -190,16 +300,20 @@ client.on("message", async message => {
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872" || message.author.id == "703636663473274962"){
       let membro = message.mentions.members.first() || message.guild.members.cache.get(args[0])
       let mensagem = args.slice(1).join(' ')
-  
       if(!membro)return await message.channel.send("Você não informou um membro!");
       if(!mensagem)return await message.channel.send("Você não informou uma mensagem!");
       try{
-        const envio = await membro.send(mensagem)
-        const confirmar = await message.channel.send(`<**${mensagem}**> foi enviada com sucesso para ${membro}!`)
+        await membro.send(mensagem)
+        await consoleServer.send(`:white_check_mark: mensagem enviada com sucesso para ${membro}!`)
         }
-      catch{const erro = await message.author.send(" :frowning2:  Não foi possivel enviar a mensagem!");}
+      catch{
+         erro.setDescription('Não foi possivel enviar a mensagem')
+         await message.author.send(erro);
+        }
         }
     }catch{
+      erro.setDescription('Não foi possivel enviar a mensagem')
+      await message.author.send(erro);
       console.error()
     }
   }
@@ -213,11 +327,16 @@ client.on("message", async message => {
     let mensagem = args.slice(2).join(' ')
     let canal = client.channels.cache.get(id);
     try{
-    const dados = await message.channel.send(`:clock2: Sera enviado **${mensagem}** no canal ${canal} daqui a ${time} minutos.`)
+    await consoleServer.send(`:clock2: Sera enviado **${mensagem}** no canal ${canal} daqui a ${time} minutos.`)
     setTimeout(()=> canal.send(mensagem),tempo)
     }
-    catch{const erro = awaitmessage.author.send(":frowning2: Não foi possivel enviar a mensagem!");}
+    catch{
+        erro.setDescription('Não foi possivel enviar a mensagem')
+         await message.author.send(erro);
+    }
     }catch{
+      erro.setDescription('Não foi possivel enviar a mensagem')
+      await message.author.send(erro);
       console.error()
   }
   }
@@ -231,17 +350,20 @@ client.on("message", async message => {
       let texto = args.slice(2).join(' ')
       let canal = client.channels.cache.get("714572433822187571")
       try{
-        const envio = await canal.send( { files: [imagem] })
+        await canal.send( { files: [imagem] })
         if(texto){
           setTimeout(()=> canal.send(texto),1000)
         }
         setTimeout(()=>canal.send("**Fonte:** " + fonte),2000)
-        const confirmar = await message.channel.send(":incoming_envelope: Noticia postada com sucesso!")
+        await consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
     }
     catch{
-        const erro = await message.author.send(":frowning2: Não foi possivel enviar a noticia");
+        erro.setDescription('Não foi possivel enviar a noticia');
+        await message.author.send(erro);
     }}
   }catch{
+    erro.setDescription('Não foi possivel enviar a noticia')
+    await message.author.send(erro);
     console.error()
   }
   }
@@ -254,30 +376,34 @@ client.on("message", async message => {
     let tipo = args[1]
     let mensagem = args.slice(3).join(' ')
     if(!mensagem){
-      let mensagem = ``
+       mensagem = ``
     }
     if(tipo === "canal"){
       let id = args[2]
       let canal = client.channels.cache.get(id)
       try{
-        const envio = await canal.send(mensagem, { files: [link] })
-        const confirmar = await message.channel.send(" :white_check_mark: Foto enviada com sucesso!")
+        await canal.send(mensagem, { files: [link] })
+        await consoleServer.send(" :white_check_mark: Foto enviada com sucesso!")
       }
       catch{
-        const erro = await message.author.send("Erro no envio da Foto para o canal!")
+        erro.setDescription(`Erro no envio da foto para ${canal}`)
+        await message.author.send(erro);
       }
     }
     if(tipo === "membro"){
       let membro =  message.mentions.members.first() || message.guild.members.cache.get(args[2])
       try{
-        const envio = await membro.send(mensagem, { files: [link] })
-        await message.channel.send(" :white_check_mark: Foto enviada com sucesso!")
+        await membro.send(mensagem, { files: [link] })
+        await consoleServer.send(" :white_check_mark: Foto enviada com sucesso!")
       }
       catch{
-        const erro = await message.author.send(`Erro no envio da Foto para o ! ${membro}`)
+        erro.setDescription(`Erro no envio da foto para o ${membro}`)
+        await message.author.send(erro);
       }
     }}
     }catch{
+      erro.setDescription('Erro ao enviar a foto')
+      await message.author.send(erro);
       console.error()
     }
   }
@@ -286,34 +412,49 @@ client.on("message", async message => {
     const busca = await message.fetch("aqui")
     busca.delete()
     let servidores = db.get('servidores').value()
-
+    const voz =  message.member.voice.channel
+    if(!voz){
+        erro.setDescription('Você não está conectado a nenhuma chamada')
+        const envio = await message.channel.send(erro)
+        setTimeout(()=> envio.delete(),3000)
+        return
+    }
+    const convite = new MessageEmbed()
+          .setTitle(message.author.username)
+          .setColor(Cor)
+          .setThumbnail(message.author.avatarURL())
+          .setAuthor(`${message.guild.name} | ${voz.name}`, message.guild.iconURL())
+          .setDescription(' \n \n [Ver](https://discordapp.com/channels/'+ message.guild.id +'/'+ voz.id +')')
+          .setFooter('Para ver a chamada você precisa está conectado')
+          .setTimestamp()
     for (var i = 0; i < servidores.length; i++){
-      let objeto = servidores[i]
-      let chave = Object.keys(objeto)
-      const indicie = chave.indexOf('canal')
-      if(chave[indicie] === 'canal'){
-        let canal = client.channels.cache.get(objeto[chave[indicie]])
-        canal.send(`${message.author} :loud_sound:  Está em call no servidor ${message.guild}.`)
-      }
+        let objeto = servidores[i]
+        let chave = Object.keys(objeto)
+        const indicie = chave.indexOf('canal')
+        if(chave[indicie] === 'canal'){
+            let canal = client.channels.cache.get(objeto[chave[indicie]])
+            canal.send(convite)
+            }
     }
-    }catch{
-      console.error()
-    }
+  }catch{
+    console.error()
+  }
   }
   if(message.content.startsWith('jarvis')) {
     try{
       const busca = await message.fetch("jarvis")
       busca.delete()
-      let canal = client.channels.cache.get("425150435725279253");
       const mensagem = args.join(' ')
       try{
-        const resposta = await message.channel.send(`:slight_smile: ${message.author} Opa beleza ?`);
-        const info = await canal.send(` Mensagem: **${mensagem}** \n Author: **${message.author}**`)
+        await message.channel.send(`:slight_smile: ${message.author} Opa beleza ?`);
+        await consoleServer.send(` Mensagem: **${mensagem}** \n Author: **${message.author}**`)
         }
       catch{
-        const erro = await message.channel.send(":yawning_face: Não entendi nada!")
+        await message.channel.send(":yawning_face: Não entendi nada!")
       }
     }catch{
+      erro.setDescription('Alguem me chamou e eu fiquei nervoso de mais')
+      await consoleServer.send(erro);
       console.error()
     }
   }
@@ -326,13 +467,15 @@ client.on("message", async message => {
       try{
           const biblioteca = args[0]
           db.set(biblioteca, []).write()
-          const envio = await message.channel.send(`:white_check_mark: Biblioteca **${biblioteca}** Criada com sucesso!`)}
+          await message.channel.send(`:white_check_mark: Biblioteca **${biblioteca}** Criada com sucesso!`)}
       catch{
-        const erro = await message.author.send(':x: Erro ao criar biblioteca.')
+        erro.setDescription('Erro ao criar biblioteca')
+        await message.author.send(erro)
       }
     }
     else{
-      const permissao = await message.channel.send('Sem permissão!')
+      erro.setDescription('Sem permissão')
+      await message.channel.send(erro)
     }
     }catch{
       console.error()
@@ -351,9 +494,10 @@ client.on("message", async message => {
         id: nome,
         valor: valor
         }).write()
-        const envio = await message.channel.send(`:white_check_mark: **${nome}** adicionado a biblioteca ${biblioteca} com sucesso!`)}
+       await message.channel.send(`:white_check_mark: **${nome}** adicionado a biblioteca ${biblioteca} com sucesso!`)}
       catch{
-        const erro = await message.author.send(':x: Erro ao criar o item.')
+        erro.setDescription('Erro ao criar item')
+        await message.author.send(erro)
       }
   }catch{
     console.error()
@@ -374,10 +518,11 @@ client.on("message", async message => {
       try{
         db.get(biblioteca)
         .find({id: item}).assign({[chave]: valor}).write()
-        const envio = await message.channel.send(`:white_check_mark: chave ${chave} foi adicionada com sucesso!.`)  
+        await message.channel.send(`:white_check_mark: chave ${chave} foi adicionada com sucesso!.`)  
         }
     catch{
-      const erro = await message.author.send(':x: Erro ao adicionar chave.')
+      erro.setDescription('Erro ao adicionar chave.')
+      await message.author.send(erro)
     }
   }catch{
     console.error()
@@ -394,10 +539,11 @@ client.on("message", async message => {
 
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
       db.get(biblioteca).remove({id: item}).write()
-      const confirmar = await message.channel.send(':white_check_mark: Item deletado com sucesso!')
+      await message.channel.send(':white_check_mark: Item deletado com sucesso!')
     }
     else{
-      const permissao = await message.channel.send(":x: Você não tem permissão!")
+      erro.setDescription('Você não tem permissão')
+      await message.author.send(erro)
     }
   }catch{
     console.error()
@@ -411,45 +557,139 @@ client.on("message", async message => {
     const item = args[1]
     const especificaçao = args[2]
     if(!item){
-      if(!biblioteca)return message.channel.send(':x: Não informou a biblioteca.')
+      if(!biblioteca){
+        erro.setDescription('Não informou a biblioteca')
+        const envio = message.channel.send(erro)
+        setTimeout(()=> envio.delete(),3000)}
       try{
         let document = db.get(biblioteca).value()
-        let msg = ' '
+        let msg = ''
         for (var i = 0; i < document.length; i++){
           let objeto2 = document[i]
           let chave2 = Object.keys(objeto2)
           if(biblioteca === 'servidores'){
-            message.channel.send(objeto2[chave2[1]])
+            msg = msg + objeto2[chave2[1]] + '\n'
           }
           else{
-            message.channel.send(objeto2[chave2[0]])
+            msg = msg + objeto2[chave2[0]] + '\n'
           }
         }
+        if(biblioteca === 'servidores'){
+          embedBiblioteca = new MessageEmbed()
+          .setTitle("Servidores")
+          .setColor(Cor)
+          .setTimestamp()
+          .setDescription(msg)
+          .setThumbnail('https://cdn.discordapp.com/attachments/714573856613859339/789255087004057671/discord.jpg')
+        }
+        else if(biblioteca === 'documentação'){
+          embedBiblioteca = new MessageEmbed()
+          .setTitle("Documentação")
+          .setColor(Cor)
+          .setDescription(msg)
+          .setThumbnail('https://cdn.discordapp.com/attachments/425141386266935296/435928628908523520/book_stack_pc_1600_clr_3258.png')
+        }
+        else{
+          embedBiblioteca = new MessageEmbed()
+          .setTitle("Repositorios")
+          .setColor(Cor)
+          .setTimestamp()
+          .setDescription(msg)
+          .setThumbnail('https://cdn.discordapp.com/attachments/714573856613859339/789255085166428200/github.png')
+        }
+        
+        await message.channel.send(embedBiblioteca)
       }
       catch{
-        const erro = await message.channel.send(':x: Erro ao achar a biblioteca informada.')
+        erro.setDescription('Erro ao achar biblioteca informada')
+        const envio = await message.channel.send(erro)
+        setTimeout(()=> envio.delete(),3000)
       }
     }
     else{
       try{
       let objeto = db.get(biblioteca).find({id: item}).value()
       let chave = Object.keys(objeto)
-  
       for (var i = 0; i < chave.length; i++) {
         if(!especificaçao){
           if(chave[i] === 'valor'){
-            message.channel.send(objeto[chave[i]])
+            if(biblioteca === 'repositorios'){
+              embedItem = new MessageEmbed()
+              .setTitle(item)
+              .setColor(Cor)
+              .setThumbnail('https://cdn.discordapp.com/attachments/714573856613859339/789255085166428200/github.png')
+              .setURL(objeto[chave[i]])
+              .setDescription('[download](' + objeto[chave[i]] +'/archive/master.zip)')
+              await message.channel.send(embedItem)
             }
+            else if (biblioteca === 'documentação'){
+              embedItem = new MessageEmbed()
+              .setTitle(item)
+              .setColor(Cor)
+              .setThumbnail('https://cdn.discordapp.com/attachments/425141386266935296/435928628908523520/book_stack_pc_1600_clr_3258.png')
+              .setURL(objeto[chave[i]])
+              await message.channel.send(embedItem)
+            }
+            else{
+              embedItem = new MessageEmbed()
+              .setTitle(item)
+              .setColor(Cor)
+              .setURL(objeto[chave[i]])
+              await message.channel.send(embedItem)
+            }
+            }
+          if(chave[i] === 'nome'){
+            try{
+              const servidor =  client.guilds.cache.get(item)
+              const convite = objeto['convite']
+              const erro = [,convite]
+              if(servidor.afkChannel != null){
+                    erro[0] = servidor.afkChannel.name
+                  }
+              else{
+                 erro[0] = 'null'
+              }
+              if(convite){
+                    erro[1] = convite 
+                  }
+              else{
+                erro[1] = "https://cdn.discordapp.com/attachments/714573856613859339/789875127570399292/mensagem_de_erro.png"
+              }
+              embedServer = new MessageEmbed()
+                .setTimestamp()
+                .setColor(Cor)
+                .setThumbnail(servidor.iconURL())
+                .setFooter('Covil', 'https://cdn.discordapp.com/attachments/425141386266935296/782306680759124028/icone.png')
+                .addFields(
+                  { name: 'Membros', value: `${servidor.members.cache.size}`,inline: true},
+                  { name: 'Canais', value: `${servidor.channels.cache.size}`,inline: true},
+                  { name: 'Dono', value: `${servidor.owner.user.username}`,inline: true},
+                  { name: 'AFK', value: erro[0],inline: true},
+                  { name: 'Moderação', value: `${servidor.verificationLevel}`,inline: true},
+                  { name: 'Região', value: `${servidor.region}`,inline: true})
+                .setAuthor(servidor.name, servidor.iconURL(), erro[1])
+                await message.channel.send(embedServer) 
+              }
+            catch{
+              console.error()
+            }
+          }  
         }
         else{
           if(chave[i]=== especificaçao){
-            message.channel.send(objeto[chave[i]])
+            embedItem = new MessageEmbed()
+              .setTitle(objeto[chave[i]])
+              .setColor(Cor)
+              .setFooter('Achamos melhor mandar dados especifos no privado')
+            message.author.send(embedItem)
           }
         }
       }
     }
        catch{
-        const erro = await message.channel.send('Erro ao achar o item informado.')
+         erro.setDescription('Erro ao acessar o item')
+        const envio = await message.channel.send(erro)
+        setTimeout(()=> envio.delete(),3000)
        }
     }
   }catch{
@@ -457,7 +697,31 @@ client.on("message", async message => {
   }
   }
 ////////////////////////////////////////
+//voz
+if(comando ==='play'){
+  let Canalvoz = message.member.voice.channel;
+  if(!args[0]){
+    erro.setDescription('Não informou oque quer tocar')
+    const envio = await message.channel.send(erro)
+    envio.delete(3000)
+  }
+  let validate = ytdl.validateURL(args[0]);
+  let info = await ytdl.getInfo(args[0]);
+  
+  if (!validate){
+    erro.setDescription('Não informou oque quer tocar')
+    const envio = await message.channel.send(erro)
+    envio.delete(3000)
+  }
+  Canalvoz.join()
+  .then(connection => {
+    const url = ytdl(args.join(' '), { filter: 'audioonly' });
+    const dispatcher = connection.play(url);
+    connection.play(url)
+  }).catch(console.error);
+  
 
+}
 //cargos 
   if(comando === "newcargo"){
     try{
@@ -466,13 +730,21 @@ client.on("message", async message => {
         let nome = args[0]
         if(!nome)return message.channel.send(':x: Não informou o nome do cargo.')
           try{
-            const cargo = await message.guild.roles.create({ data: {
+            if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+            await message.guild.roles.create({ data: {
             name: nome,
             },})
-            await message.author.send(':white_check_mark: Cargo criado com sucesso! ')
+            await message.channel.send(':white_check_mark: Cargo criado com sucesso! ')
+          }
+          else{
+            erro.setDescription('Você não tem permissão')
+            await message.author.send(erro)
+          }
            }
           catch{
-            const erro = await message.author.send(':x: Erro ao criar o novo cargo.')
+            erro.setDescription('Erro ao criar o novo cargo')
+            await message.author.send(erro)
+    
           }
     }catch{
       console.error()
@@ -483,50 +755,26 @@ client.on("message", async message => {
       const busca = await message.fetch("excargo")
       busca.delete()
       try{
+        if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
         const cargo = message.mentions.roles.first() || message.guild.roles.cache.get(args[0]) || message.roles;
         cargo.delete()
         const confirmar = await message.channel.send(":white_check_mark: Cargo deletado com sucesso!")
+        }
+        else{
+        erro.setDescription('Você não tem permissão')
+        await message.author.send(erro)
+      }
       }
       catch{
-        const erro = await message.author.send(":x: Erro ao deletar o cargo!")
+        erro.setDescription('Erro ao deletar o cargo')
+      await message.author.send(erro)
+        
       }
     }catch{
       console.error()
     }
   }
-  if (comando === "afk"){
-    try{
-      const busca = await message.fetch("afk")
-      busca.delete()
-      let servidor = db.get('servidores').find({id : message.guild.id}).value()
-      let chave = Object.keys(servidor)
-      for (var i = 0; i < chave.length; i++) {
-        if(chave[i] === 'cargo'){
-          let cargo = message.guild.roles.cache.get(servidor[chave[i]])
-          if(!cargo)return
-          if (!message.member.roles.cache.has(cargo.id)) {
-            const add = await message.member.roles.add(cargo.id)
-            const confirmar = await message.channel.send(" :inbox_tray:**CARREGANDO**")
-            setTimeout(()=> confirmar.edit("**.**"),2000)
-            setTimeout(()=> confirmar.edit("**..**"),2000);
-            setTimeout(()=> confirmar.edit("**...**"),2000);
-            setTimeout(()=> confirmar.edit("Seu status foi definido para: :x: **OFFLINE**"),3000);
-          } 
-          else {
-            const remover = await message.member.roles.remove(cargo.id)
-            const confirmar = await message.channel.send(" :inbox_tray: **CARREGANDO**")
-            setTimeout(()=> confirmar.edit("**.**"),2000)
-            setTimeout(()=> confirmar.edit("**..**"),2000);
-            setTimeout(()=> confirmar.edit("**...**"),2000);
-            setTimeout(()=> confirmar.edit("Seu status foi definido para:  :white_check_mark:**ONLINE**"),3000);
-          
-           }
-        }
-  }
-  }catch{
-    console.error()
-  }
-  }
+ 
 //sistema de verificação
   if(comando === "status"){
     try{
@@ -535,19 +783,26 @@ client.on("message", async message => {
     const servidores = client.guilds.cache.map(a =>`${a.name}` )
     if(args[0]=== 'servidores' ){
       if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-          const envio = await message.channel.send(`**Servidores cadastrados: ** ${servidores}`)
-          const canais = client.channels.cache.map(a =>  message.author.send(`${a.name} : ${a.id}\n`))
+          await message.channel.send(`**Servidores cadastrados: ** ${servidores}`)
+          client.channels.cache.map(a =>  message.author.send(`${a.name} : ${a.id}\n`))
       }
       else{
-        const permissao = await message.author.send(`:x: Você não tem acesso!`)
+        erro.setDescription('Você não tem permissão')
+        await message.author.send(erro)
       }
     }
     else{
-    const status = await message.channel.send(":arrows_counterclockwise: **CARREGANDO**");
-    setTimeout(()=> status.edit("**.**"),2000)
-    setTimeout(()=> status.edit("**..**"),2000);
-    setTimeout(()=> status.edit("**...**"),2000);
-    setTimeout(() => status.edit(`:bar_chart: Funcionando com ${client.users.cache.size} usuários, em ${client.channels.cache.size} canais, em ${client.guilds.cache.size} servidores.`), 4000);
+      const status = new MessageEmbed()
+      .setThumbnail('https://cdn.discordapp.com/attachments/714573856613859339/789211155452526662/status.jpg')
+      .setColor(Cor)
+      .setTimestamp()
+      .addFields(
+        { name: 'Usuarios', value: `${client.users.cache.size}`,inline: true},
+        { name: 'Servidores', value: `${client.guilds.cache.size}`,inline: true},   
+        { name: 'Canais', value: `${client.channels.cache.size}`,inline: true})
+      .setFooter('Covil', 'https://cdn.discordapp.com/attachments/425141386266935296/782306680759124028/icone.png')
+      await message.channel.send(status);
+      
   }
   }catch{
     console.error()
@@ -557,27 +812,28 @@ client.on("message", async message => {
     try{
     const busca = await message.fetch("verificar")
     busca.delete()
-
-    let servidores = db.get('servidores').find({id : message.guild.id}).value()
-    let chave = Object.keys(servidores)
     const member = message.mentions.members.first() || message.guild.members.cache.get(args[0]) || message.member;
-    for (var i = 0; i < chave.length; i++) {
-        if(chave[i] === 'cargo'){
-          let cargo = message.guild.roles.cache.get(servidores[chave[i]])
-          if(!cargo)return
-          if (message.member.roles.cache.has(cargo.id)) {
-            const r = await message.channel.send(":x: offline")
-          } 
-          else {
-           const r = await message.channel.send(":white_check_mark: online")
-         }
-          }
+    try{
+      const statusList = ['Online','Ausente','Ocupado','Offline']
+      const stateList = ['online','idle','dnd','offline']
+      let indice = stateList.indexOf(member.presence.status)
+      const status = new MessageEmbed()
+          .setTitle(`${member.user.username}`)
+          .setDescription(statusList[indice])
+          .setColor(Cor)
+          .setThumbnail(member.user.avatarURL())
+          .setTimestamp()
+      await message.channel.send(status)
     }
+    catch{
+      erro.setDescription('Erro ao verificar membro')
+      await message.channel.send(erro)
+    }
+    
   }catch{
     console.error()
   }
   }
-  
   if(comando === "mostrar"){
     try{
     const busca = await message.fetch("mostrar")
@@ -585,40 +841,59 @@ client.on("message", async message => {
     const tipo = args[0]
     const nome = args[1]
     membro = message.mentions.members.first() || message.guild.members.cache.get(args[2]) || message.member;
+    const dados = new MessageEmbed()
+        .setColor(Cor)
+        .setTimestamp()
     if(!tipo){
-      const erro = await message.channel.send(`${message.author} Busca invalida!`)
+      erro.setDescription('Busca invalida')
+      const envio = await message.channel.send(erro)
+      setTimeout(() => envio.delete(),3000)
     }
     else if(tipo === "dono"){
-      const resposta = await message.channel.send(`Criador do servidor: **${message.guild.owner.user.username}**`)
+      dados.setTitle(`${message.guild.owner.user.username}`)
+      dados.setDescription(`${message.guild.name}`)
+      dados.setThumbnail(message.guild.owner.user.avatarURL())
+  
+      await message.channel.send(dados)
     }
     else if(tipo === "data"){
-        if(!nome)return message.channel.send(`${message.author} Busca invalida!`)
+        if(!nome){
+          erro.setDescription('Busca invalida. Não informou o nome')
+          const envio = await message.channel.send(erro)
+          setTimeout(()=> envio.delete(),3000)
+        }
         if(nome === "canal"){
           const id = args[2]
-          if(!id)return message.channel.send("Você não informou o ID do canal.")
-        
+          if(!id){
+            erro.setDescription('Tentativa invalida. você não informou o ID.')
+            const envio = await message.channel.send(erro)
+            setTimeout(()=> envio.delete(),3000)
+          }
+    
           const canal =  client.channels.cache.get(id);
           const dados =  canal.createdAt
           let data = dados.toLocaleDateString()
-          const resposta = await message.channel.send(`${canal} foi criado em **${data}**`)
+          await message.channel.send(`${canal} foi criado em **${data}**`)
 
         }
         if(nome ==="membro"){
           const dados = membro.user.createdAt
           let data = dados.toLocaleDateString()
-          const resposta = await message.channel.send(`O membro ${membro} entrou no discord em **${data}**`)
+          await message.channel.send(`O membro ${membro} entrou no discord em **${data}**`)
         }
       }
     else if(tipo === "canal"){
         if(!nome)return message.channel.send(`${message.author} Busca invalida!`)
         if(nome === "lista"){
           const lista = await message.guild.channels.cache.map((i) => i.name);
-          const enviar = await message.channel.send(lista)
+          dados.setTitle('📜Lista de canais')
+          dados.setDescription(lista)
+          await message.channel.send(dados)
         }
         else{
           try{
             let channel = message.guild.channels.cache.find(c => c.name === nome);
-            const resposta = await message.channel.send(`${message.author} Encontrei canal com esse nome. \n ID: ${channel.id}`)
+            await message.channel.send(`${message.author} Encontrei canal com esse nome. \n ID: ${channel.id}`)
           }
           catch{
             const channelServer = client.channels.cache.map(c => {
@@ -635,10 +910,10 @@ client.on("message", async message => {
                 var indice = channelServer.indexOf(false);
                 }
               if(channelServer.length == 0 || channelServer == null){
-                const erro = await message.channel.send('Esse canal não faz parte do meu sistema.')
+                await message.channel.send('Esse canal não faz parte do meu sistema.')
               }
               else{
-                const resposta = await message.channel.send(`${message.author} Encontrei seu canal em outro servidor. \n ID: ${channelServer}`)
+                await message.channel.send(`${message.author} Encontrei seu canal em outro servidor. \n ID: ${channelServer}`)
               }
           }
         }
@@ -653,14 +928,15 @@ client.on("message", async message => {
     const busca = await message.fetch("sala")
     busca.delete()
     try{
-      const categoria = await message.guild.channels.create("🎮SALA", {type: "category"}).catch(console.error);
-      let categoriaID = message.guild.channels.cache.find(c => c.name === "🎮SALA"); 
-      const canal =  await message.guild.channels.create("💬chat", {type: "text" , parent: categoria.id }).catch(console.error);
-      const voice =  await message.guild.channels.create("🔊CHAMADA", {type: "voice" , parent: categoria.id }).catch(console.error);
-      const resposta = await message.channel.send(":white_check_mark: Sala criada!")
+      await message.guild.channels.create("🎮SALA", {type: "category"}).catch(console.error);
+      await message.guild.channels.cache.find(c => c.name === "🎮SALA"); 
+      await message.guild.channels.create("💬chat", {type: "text" , parent: categoria.id }).catch(console.error);
+      await message.guild.channels.create("🔊CHAMADA", {type: "voice" , parent: categoria.id }).catch(console.error);
+      await message.channel.send(":white_check_mark: Sala criada!")
     }
     catch{
-      const erro= await message.author.send("Erro ao criar uma sala!")
+      erro.setDescription('Erro ao criar sala')
+      await message.author.send(erro)
     }  
     }catch{
     console.error()
@@ -674,13 +950,14 @@ client.on("message", async message => {
       let categoria = message.guild.channels.cache.find(c => c.name === "🎮SALA");
       let text = message.guild.channels.cache.find(c => c.name === "💬chat");
       let voice = message.guild.channels.cache.find(c => c.name === "🔊CHAMADA");
-      const apagar = await categoria.delete()
-      const apagar1 = await text.delete()
-      const apagar2 = await voice.delete()
-      const resposta = await message.channel.send(":white_check_mark: Sala Deletada")
+      await categoria.delete()
+      await text.delete()
+      await voice.delete()
+      await message.channel.send(":white_check_mark: Sala Deletada")
     }
     catch{
-      const erro = await message.author.send("Erro ao deletar sala!")
+      erro.setDescription('Erro ao deletar sala')
+      await message.author.send(erro)
   }
   }catch{
   console.error()
@@ -696,20 +973,26 @@ client.on("message", async message => {
     busca.delete()
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
       if(!id){
-        const r = await message.channel.send(`${message.author} Não enviou nenhum ID para eu apagar!`)
+        erro.setDescription('Não enviou nenhum ID para eu apagar!')
+        envio = await message.channel.send(erro)
+        setTimeout(() => envio.delete(),3000)
+       
           }
       else{
         try{
-          const apagarCanal = await canal.delete()
+          await canal.delete()
           await message.channel.send(':white_check_mark: Canal deletado!')
       }
       catch{
-        const erro = await message.author.send(":x: Erro ao apagar canal.")
+        erro.setDescription('Erro ao apagar canal.')
+        await message.author.send(erro)
       }
     }
     }
     else{
-    const erro = await message.channel.send(`${message.author} Não recebo ordens de você! `)
+      erro.setDescription('Sem permissão')
+      envio = await message.author.send(erro)
+    
     }
     }catch{
       console.error()
@@ -725,7 +1008,9 @@ client.on("message", async message => {
       let categoria = args[2]
   
       if(!nome){
-        const erro = await message.channel.send(`${message.author} Tentativa invalida. você não informou o nome.`)
+        erro.setDescription('Tentativa invalida. você não informou o nome.')
+        const envio = await message.channel.send(erro)
+        setTimeout(()=> envio.delete(),3000)
       }
       else{
         try{
@@ -733,7 +1018,8 @@ client.on("message", async message => {
           await message.channel.send(":white_check_mark: Canal criado com sucesso!")
         }
         catch{
-          await message.author.send("Erro ao criar canal!")
+          erro.setDescription('Erro ao criar canal')
+          await message.author.send(erro)
         }
       }
     }
@@ -749,14 +1035,18 @@ client.on("message", async message => {
       const membro = message.mentions.members.first()
       try{
        await membro.kick()
-       await message.channel.send(':white_check_mark: Membro espulso com sucesso!')
+       await message.channel.send(':white_check_mark: Membro expulso com sucesso!')
       }
       catch{
-        await message.author.send(":x: Erro ao expulsar o membro.")
+        erro.setDescription('Erro ao expulsar membro')
+        await message.author.send(erro)
       }
     }
     else{
-       await message.channel.send(`${message.author} Não recebo ordens de você!!`);
+      erro.setDescription('Não recebo ordens de você')
+      const envio = await message.channel.send(erro)
+      setTimeout(() => envio.delete(), 3000 )
+       
     }
   }catch{
     console.error()
@@ -769,18 +1059,23 @@ client.on("message", async message => {
     let qt = args[0]
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
       if(!qt){
-      const erro = await message.channel.send(`${message.author} Não me informou quantas mensagens devo apagar!`)
+        erro.setDescription('Não me informou quantas mensagens devo apagar!')
+        const envio = await message.channel.send(erro)
+        setTimeout(()=> envio.delete(),3000)
       }
     else{
       try{
-        setTimeout(() => {message.channel.bulkDelete(qt);}, 2000);
+        setTimeout(() => {message.channel.bulkDelete(qt);}, 500);
       }
       catch{
-        await message.author.send("Erro ao deletar mensagem!!")
+        erro.setDescription('Erro ao deletar mensagem')
+        await message.author.send(erro)
       }
     }
   }
   }catch{
+    erro.setDescription('Erro ao deletar mensagem')
+    await message.author.send(erro)
     console.error()
   }
   }
@@ -790,11 +1085,13 @@ client.on("message", async message => {
     busca.delete()
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
     if (args[0] == 'reset'){
+      consoleServer.send('Status resetado!')
       client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
     }
     else{
     const status = args.join(' ')
     client.user.setActivity(status, { type: 'PLAYING' })
+    consoleServer.send('Status Alterado!')
     .catch(console.error);
     }
     }

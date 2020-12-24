@@ -13,46 +13,44 @@
       "valor": "https://adonisjs.com/docs/4.1/installation"
     },
     {
+      "id": "rocketseat",
+      "valor": "https://github.com/Rocketseat/awesome"
+    },
+    {
       "id": "jarvis",
-      "valor": "https://github.com/JefersonLopes2018/jarvis/blob/documentação/docs.md"
+      "valor": "https://github.com/JefersonLopes2018/jarvisDocs"
     }
   ],
   "repositorios": [
     {
       "id": "aed2",
-      "valor": "https://github.com/cacioow/AED2/archive/master.zip"
+      "valor": "https://github.com/cacioow/AED2"
     },
     {
       "id": "linkedin",
-      "valor": "https://github.com/bytejr/linkedin/archive/master.zip"
+      "valor": "https://github.com/bytejr/linkedin"
     },
     {
       "id": "corona",
-      "valor": "https://github.com/bytejr/corona/archive/master.zip"
-    },
-    {
-      "id": "rocketseat",
-      "valor": "https://github.com/Rocketseat/awesome"
+      "valor": "https://github.com/bytejr/corona"
     }
   ],
   "servidores": [
     {
       "id": "343227251501957121",
-      "nome": "F SOCIETY",
-      "canal": "392711722172940298",
-      "cargo": "703382637858914353",
-      "welcome": "425142094236221440"
+      "nome": "Covil",
+      "canal": "781170727151206420",
+      "welcome": "425142094236221440",
+      "convite": "https://discord.gg/RXNTwcW"
     },
     {
       "id": "730069592030052376",
       "nome": "Byte Jr.",
-      "cargo": "775536120565727242",
       "welcome": "730069592633770007"
     },
     {
       "id": "677258249971433492",
       "nome": "Cidade Luminosa",
-      "cargo": "779832200752529418",
       "canal": "677710176761020426",
       "welcome": "677708741294161946"
     }
