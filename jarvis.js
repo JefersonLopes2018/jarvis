@@ -9,15 +9,11 @@ const FileSync = require('lowdb/adapters/FileSync')
 const adapter = new FileSync('banco.json')
 const db = low(adapter)
 
-const queue = new Map();
-const YouTube = require('simple-youtube-api');
-const ytdl = require('ytdl-core');
-const youtube = new YouTube("api do yt");
 
 client.on("ready", () => {
   console.log('Estou Pronto para ser usado!');
   console.log(`Bot foi iniciado, com ${client.users.cache.size} usuários, em ${client.channels.cache.size} canais, em ${client.guilds.cache.size} servidores.`);
-  client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
+  client.user.setActivity(`${client.users.cache.size} usuários em ${client.guilds.cache.size} servidores.`, { type: 'PLAYING' });
 });
 
 client.on("guildMemberAdd", async member => {
@@ -57,7 +53,7 @@ client.on("guildMemberRemove",async member => {
   }
   client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' }).catch(console.error);
   
-  staff.send(`**${member.user.username}** saiu do servidor **${member.guild}**`)
+  staff.send(`**${member.user.tag}** saiu do servidor **${member.guild}**`)
 });
 
 client.on("guildCreate", async server => {
@@ -75,7 +71,6 @@ client.on("guildDelete", async server => {
   const servidor = server.id
   db.get('servidores').remove({id : servidor}).write()
 })
-
 client.on("message", async message => {
   //Config 
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
@@ -104,6 +99,7 @@ client.on("message", async message => {
       return 
     }
   }
+  
   //autenticação 
   if (comando === 'login'){
     try{
@@ -697,39 +693,7 @@ client.on("message", async message => {
   }
   }
 ////////////////////////////////////////
-//voz
-if(comando ==='play'){
-  let Canalvoz = message.member.voice.channel;
-  if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-    if(!args[0]){
-      erro.setDescription('Não informou oque quer tocar')
-      const envio = await message.channel.send(erro)
-      envio.delete(3000)
-    }
-    let validate = ytdl.validateURL(args[0]);
-    let info = await ytdl.getInfo(args[0]);
-  
-    if (!validate){
-      erro.setDescription('Não informou oque quer tocar')
-      const envio = await message.channel.send(erro)
-      envio.delete(3000)
-    }
-    Canalvoz.join()
-      .then(connection => {
-      const url = ytdl(args.join(' '), { filter: 'audioonly' });
-      const dispatcher = connection.play(url);
-      connection.play(url)
-    }).catch(console.error);
-  }
- else{
-    Canalvoz.join()
-    .then(connection => {
-    const url = ytdl('https://youtu.be/vxT-RCl6cvs', { filter: 'audioonly' });
-    const dispatcher = connection.play(url);
-    connection.play(url)
-    }).catch(console.error);
- }
-}
+
 //cargos 
   if(comando === "newcargo"){
     try{
@@ -937,13 +901,13 @@ if(comando ==='play'){
     busca.delete()
     try{
       await message.guild.channels.create("🎮SALA", {type: "category"}).catch(console.error);
-      await message.guild.channels.cache.find(c => c.name === "🎮SALA"); 
+      const categoria = await message.guild.channels.cache.find(c => c.name === "🎮SALA"); 
       await message.guild.channels.create("💬chat", {type: "text" , parent: categoria.id }).catch(console.error);
       await message.guild.channels.create("🔊CHAMADA", {type: "voice" , parent: categoria.id }).catch(console.error);
       await message.channel.send(":white_check_mark: Sala criada!")
-    }
+   }
     catch{
-      erro.setDescription('Erro ao criar sala')
+     erro.setDescription('Erro ao criar sala')
       await message.author.send(erro)
     }  
     }catch{
