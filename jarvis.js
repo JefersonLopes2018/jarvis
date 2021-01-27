@@ -9,6 +9,10 @@ const FileSync = require('lowdb/adapters/FileSync')
 const adapter = new FileSync('banco.json')
 const db = low(adapter)
 
+var sala = new Object();
+sala.aberta = false
+sala.dono = ''
+sala.chave = ''
 
 client.on("ready", () => {
   console.log('Estou Pronto para ser usado!');
@@ -895,16 +899,74 @@ client.on("message", async message => {
   }
   }
   //salas
+
+  if(comando === "asala"){
+    try{
+    const busca = await message.fetch("sala")
+    busca.delete()
+    try{
+      if(!args[0]){
+        erro.setDescription('Você precisa da chave de acesso!')
+        const envio = await message.channel.send(erro)
+        setTimeout(() => envio.delete(), 3000 )
+        return 
+      }
+      await message.member.roles.add(args[0])
+      let sala = message.guild.channels.cache.find(c => c.name === "💬chat");
+      sala.send(`${message.author} entrou na sala`)
+      const convite = new MessageEmbed()
+      .setTitle('Sala liberada para ' + message.author.tag)
+      .setColor(Cor)
+      .setDescription(' \n \n [Ir para sala](https://discordapp.com/channels/'+ message.guild.id +'/'+ sala.id +')')
+      .setFooter('Essa sala pode ser fechada usando o comando  .delsala ')
+      await message.channel.send(convite)
+    }
+    catch{
+      erro.setDescription('Erro ao entrar na sala')
+      await message.author.send(erro)
+    } 
+    }catch{
+    console.error()
+  }
+    }
   if(comando === "sala"){
     try{
     const busca = await message.fetch("sala")
     busca.delete()
     try{
-      await message.guild.channels.create("🎮SALA", {type: "category"}).catch(console.error);
+      if(sala.aberta == true){
+        message.channel.send(`Já existe uma sala, peça a chave de acesso para ${sala.dono}`)
+        return
+        }
+      const cargo = await message.guild.roles.create({ data: {
+        name: '🎮sala',
+        },})
+      await message.guild.channels.create("🎮SALA", {
+        type: 'category',
+        permissionOverwrites: [
+          {
+            id: message.guild.id,
+            deny: ['VIEW_CHANNEL'],
+          },
+          {
+            id: cargo.id,
+            allow: ['VIEW_CHANNEL'],
+          },
+        ]}
+        ).catch(console.error);
       const categoria = await message.guild.channels.cache.find(c => c.name === "🎮SALA"); 
-      await message.guild.channels.create("💬chat", {type: "text" , parent: categoria.id }).catch(console.error);
+      const canal = await message.guild.channels.create("💬chat", {type: "text" , parent: categoria.id }).catch(console.error);
       await message.guild.channels.create("🔊CHAMADA", {type: "voice" , parent: categoria.id }).catch(console.error);
-      await message.channel.send(":white_check_mark: Sala criada!")
+      const convite = new MessageEmbed()
+      .setTitle(':white_check_mark: Sala criada!')
+      .setColor(Cor)
+      .setDescription(' \n Chave da sala : '+ cargo.id)
+      .setTimestamp()
+      await message.member.roles.add(cargo.id)
+      await canal.send(convite)
+      sala.aberta = true
+      sala.dono = message.author.tag
+      sala.chave = cargo.id
    }
     catch{
      erro.setDescription('Erro ao criar sala')
@@ -916,16 +978,26 @@ client.on("message", async message => {
     }
   if(comando ==="delsala"){
     try{
-    const busca = await message.fetch("salap")
+    const busca = await message.fetch()
     busca.delete()
     try{
       let categoria = message.guild.channels.cache.find(c => c.name === "🎮SALA");
       let text = message.guild.channels.cache.find(c => c.name === "💬chat");
       let voice = message.guild.channels.cache.find(c => c.name === "🔊CHAMADA");
-      await categoria.delete()
-      await text.delete()
-      await voice.delete()
-      await message.channel.send(":white_check_mark: Sala Deletada")
+      let cargo = message.guild.roles.cache.get(sala.chave)
+      /*if(!args[0]){
+          erro.setDescription('Você precisa informar a chave da sala')
+          await message.channel.send(erro)
+        }*/
+      //else{
+        await categoria.delete()
+        await text.delete()
+        await voice.delete()
+        await cargo.delete()
+        sala.aberta = false
+        await message.author.send(":white_check_mark: Sala Deletada")
+      //} 
+      
     }
     catch{
       erro.setDescription('Erro ao deletar sala')
