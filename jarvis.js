@@ -1,5 +1,6 @@
 const Discord = require("discord.js"); 
 const {MessageEmbed} = require('discord.js');
+const {MessageAttachment } = require('discord.js');
 const client = new Discord.Client(); 
 const config = require("./config.json"); 
 const jimp =require("jimp");
@@ -282,6 +283,15 @@ client.on("message", async message => {
   if(message.channel.type === "dm"){
     try{
       try{
+        if(message.channel.lastMessage.attachments){
+          const link = message.channel.lastMessage.attachments.map(c => c.url)
+          const arquivo = new MessageAttachment(link[0])
+          const msg = `O membro **${message.author}** enviou um arquivo:`
+          await consoleServer.send(msg)
+          await consoleServer.send(arquivo)
+          return
+        }
+        
         const msg = `O membro **${message.author}** respondeu: \n ${message.content}`
         await consoleServer.send(msg)}
       catch{
@@ -340,32 +350,55 @@ client.on("message", async message => {
       console.error()
   }
   }
+  
   if(comando === "noticia"){
     try{
-    const busca = await message.fetch("noticia")
-    busca.delete()
-    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-      const imagem = args[0]
-      const fonte = args[1]
-      let texto = args.slice(2).join(' ')
-      let canal = client.channels.cache.get("714572433822187571")
-      try{
-        await canal.send( { files: [imagem] })
-        if(texto){
-          setTimeout(()=> canal.send(texto),1000)
-        }
-        setTimeout(()=>canal.send("**Fonte:** " + fonte),2000)
-        await consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
+      const busca = await message.fetch("noticia")
+      busca.delete()
+      if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+        const imagem = args[0]
+        const fonte = args[1]
+        let texto = args.slice(2).join(' ')
+        let canal = client.channels.cache.get("714572433822187571")
+      
+        if(!imagem || !fonte || !texto)return await message.channel.send('Noticia Não passou nas validações')
+          const noticia = new MessageEmbed()
+          .setTitle(texto)
+          .setFooter('Fonte: '+ fonte)
+          .setColor(Cor)
+          .setURL(fonte)
+          .setImage(imagem)
+          .setTimestamp()
+        const confirm = await message.channel.send('Envie a palavra "enviar" ou uma menção')
+          const timer = setInterval(() => {
+            if(message.channel.lastMessage.content == 'enviar'){
+              message.channel.lastMessage.delete()
+              confirm.delete()
+              canal.send(noticia)
+              consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
+              clearInterval(timer)
+            }
+            else if(message.channel.lastMessage.content[0] == '@'){
+              message.channel.lastMessage.delete()
+              confirm.delete()
+              canal.send(message.channel.lastMessage.content)
+              canal.send(noticia)
+              consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
+              clearInterval(timer)
+              }
+          },1000)
+          setTimeout(()=> {
+            if(timer._destroyed == false){
+              clearInterval(timer)
+              confirm.edit(':x: O tempo para enviar a noticia experiou')
+            }},10000)
+
     }
-    catch{
-        erro.setDescription('Não foi possivel enviar a noticia');
-        await message.author.send(erro);
-    }}
-  }catch{
-    erro.setDescription('Não foi possivel enviar a noticia')
-    await message.author.send(erro);
-    console.error()
-  }
+    }catch{
+      erro.setDescription('Não foi possivel enviar a noticia')
+      await message.author.send(erro);
+      console.error()
+   } 
   }
   if(comando ==="foto"){
     try{
@@ -900,13 +933,19 @@ client.on("message", async message => {
   }
   //salas
 
-  if(comando === "asala"){
+  if(comando === "salaconect"){
     try{
-    const busca = await message.fetch("sala")
+    const busca = await message.fetch()
     busca.delete()
     try{
       if(!args[0]){
         erro.setDescription('Você precisa da chave de acesso!')
+        const envio = await message.channel.send(erro)
+        setTimeout(() => envio.delete(), 3000 )
+        return 
+      }
+      else if(args[0] != sala.chave){
+        erro.setDescription('Chave de acesso invalida!')
         const envio = await message.channel.send(erro)
         setTimeout(() => envio.delete(), 3000 )
         return 
