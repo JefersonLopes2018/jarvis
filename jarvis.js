@@ -808,7 +808,11 @@ client.on("message", async message => {
       .addFields(
         { name: 'Usuarios', value: `${client.users.cache.size}`,inline: true},
         { name: 'Servidores', value: `${client.guilds.cache.size}`,inline: true},   
-        { name: 'Canais', value: `${client.channels.cache.size}`,inline: true})
+        { name: 'Canais', value: `${client.channels.cache.size}`,inline: true},
+        { name: 'Home', value: '[acessar](https://discord.gg/RXNTwcW)' ,inline: true},
+        { name: 'Site', value: '[acessar](http://thelopes.glitch.me)' ,inline: true},
+        { name: 'Hospedagem', value: '[acessar](https://discloudbot.com)', inline: true}
+        )
       .setFooter('Covil', 'https://cdn.discordapp.com/attachments/425141386266935296/782306680759124028/icone.png')
       await message.channel.send(status);
       
