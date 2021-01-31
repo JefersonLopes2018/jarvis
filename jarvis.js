@@ -113,6 +113,7 @@ client.on("message", async message => {
     let server = message.guild.id
     const cargo = args[0]
     const senha = args[1]
+
     if(server != '343227251501957121'){
       erro.setDescription('Você está tentando logar fora do servidor Oficial')
       envio = await message.channel.send(erro)
@@ -327,6 +328,38 @@ client.on("message", async message => {
       console.error()
     }
   }
+  if(comando === "arquivo"){
+    try{
+      const busca = await message.fetch()
+      busca.delete()
+      if(!args[0])return message.channel.send('Não informou o canal')
+      const canal = client.channels.cache.get(args[0])
+      const envio = await message.channel.send('Envie o arquivo')
+      const cap = setInterval(() => {
+        const arquivoInput = message.channel.lastMessage.attachments
+        const arquivoOuput = arquivoInput.map(name => name.url)
+        if(arquivoOuput[0]){
+          const arquivo = new MessageAttachment(arquivoOuput[0])
+          canal.send(arquivo)
+          message.channel.bulkDelete(1)
+          envio.edit('✅ arquivo enviado')
+          clearInterval(cap)
+        }
+        
+      },1000)
+      setTimeout(() => {
+        if(cap._destroyed == false){
+          envio.edit(':x: Tempo expirado')
+          clearInterval(cap)
+                                  } 
+        },30000)
+    }
+    catch{
+      erro.setDescription('Não foi possivel enviar o arquivo')
+      await message.author.send(erro);
+      console.error()
+    }
+  }
   if(comando ==="time"){
     try{
     const busca = await message.fetch("time")
@@ -356,48 +389,52 @@ client.on("message", async message => {
       const busca = await message.fetch("noticia")
       busca.delete()
       if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+      
         const imagem = args[0]
         const fonte = args[1]
         let texto = args.slice(2).join(' ')
         let canal = client.channels.cache.get("714572433822187571")
-      
         if(!imagem || !fonte || !texto)return await message.channel.send('Noticia Não passou nas validações')
-          const noticia = new MessageEmbed()
-          .setTitle(texto)
-          .setFooter('Fonte: '+ fonte)
-          .setColor(Cor)
-          .setURL(fonte)
-          .setImage(imagem)
-          .setTimestamp()
+        const noticia = new MessageEmbed()
+        .setTitle(texto)
+        .setFooter('Fonte: '+ fonte)
+        .setColor(Cor)
+        .setImage(imagem)
+        .setTimestamp()
+        if(fonte.includes('https:')){
+          noticia.setURL(fonte)
+        }
+  
         const confirm = await message.channel.send('Envie a palavra "enviar" ou uma menção')
           const timer = setInterval(() => {
             if(message.channel.lastMessage.content == 'enviar'){
-              message.channel.lastMessage.delete()
-              confirm.delete()
-              canal.send(noticia)
-              consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
-              clearInterval(timer)
+                message.channel.lastMessage.delete()
+                confirm.delete()
+                canal.send(noticia)
+                clearInterval(timer)
             }
-            else if(message.channel.lastMessage.content[0] == '@'){
-              message.channel.lastMessage.delete()
-              confirm.delete()
-              canal.send(message.channel.lastMessage.content)
-              canal.send(noticia)
-              consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
-              clearInterval(timer)
+            else if(message.channel.lastMessage.content[0] == '@' || message.channel.lastMessage.content[1] == '@'){
+                message.channel.lastMessage.delete()
+                confirm.delete()
+                canal.send(message.channel.lastMessage.content)
+                canal.send(noticia)
+                clearInterval(timer)
               }
           },1000)
           setTimeout(()=> {
             if(timer._destroyed == false){
               clearInterval(timer)
               confirm.edit(':x: O tempo para enviar a noticia experiou')
-            }},10000)
-
+            }
+            else{
+              consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
+            }  
+          },5000)
+        
     }
     }catch{
       erro.setDescription('Não foi possivel enviar a noticia')
       await message.author.send(erro);
-      console.error()
    } 
   }
   if(comando ==="foto"){
@@ -802,23 +839,22 @@ client.on("message", async message => {
     }
     else{
       const status = new MessageEmbed()
-      .setThumbnail('https://cdn.discordapp.com/attachments/714573856613859339/789211155452526662/status.jpg')
+      .setThumbnail('https://cdn.discordapp.com/attachments/714573856613859339/805109196714016779/jarvis-secret.gif')
       .setColor(Cor)
       .setTimestamp()
       .addFields(
         { name: 'Usuarios', value: `${client.users.cache.size}`,inline: true},
         { name: 'Servidores', value: `${client.guilds.cache.size}`,inline: true},   
         { name: 'Canais', value: `${client.channels.cache.size}`,inline: true},
-        { name: 'Home', value: '[acessar](https://discord.gg/RXNTwcW)' ,inline: true},
-        { name: 'Site', value: '[acessar](http://thelopes.glitch.me)' ,inline: true},
-        { name: 'Hospedagem', value: '[acessar](https://discloudbot.com)', inline: true}
+        {name: '_', value: '[Home](https://discord.gg/RXNTwcW)',inline: true }
+        
         )
-      .setFooter('Covil', 'https://cdn.discordapp.com/attachments/425141386266935296/782306680759124028/icone.png')
+      .setFooter('Hospedado em https://discloudbot.com')
       await message.channel.send(status);
       
   }
   }catch{
-    console.error()
+    console.error('erro')
   }
   }
   if(comando === "verificar"){
