@@ -16,12 +16,13 @@ sala.dono = ''
 sala.chave = ''
 
 client.on("ready", () => {
-  console.log('Estou Pronto para ser usado!');
+  console.log('Iniciando...');
   console.log(`Bot foi iniciado, com ${client.users.cache.size} usuários, em ${client.channels.cache.size} canais, em ${client.guilds.cache.size} servidores.`);
   client.user.setActivity(`${client.users.cache.size} usuários em ${client.guilds.cache.size} servidores.`, { type: 'PLAYING' });
 });
 
 client.on("guildMemberAdd", async member => {
+  let staff = client.channels.cache.get("425150435725279253")
   client.user.setActivity(`${client.users.cache.size} usuarios em ${client.guilds.cache.size} servidores. `, { type: 'PLAYING' });
   let server = member.guild.id
   let fonte = await jimp.loadFont(jimp.FONT_SANS_32_BLACK)
@@ -45,10 +46,10 @@ client.on("guildMemberAdd", async member => {
   }
    
   }
-  console.log('Imagem enviada para o Discord')
+  staff.send(`**${member.user.tag}** entrou no servidor **${member.guild}**`)
   })
   .catch(err => {
-  console.log('error avatar')
+  console.log(err, 'error avatar')
   })
 })
 client.on("guildMemberRemove",async member => {
@@ -80,14 +81,16 @@ client.on("message", async message => {
   //Config 
   const args = message.content.slice(config.prefix.length).trim().split(/ +/g);
   const comando = args.shift().toLowerCase();
-  const Cor = '#6A5ACD'
+  const Cor = '#00BFFF'
   const consoleServer = client.channels.cache.get("425150435725279253");
+
   const erro = new MessageEmbed()
       .setTitle('ERRO!')
       .setColor('#FF0000')
       .setThumbnail('https://cdn.discordapp.com/attachments/714573856613859339/789552509903044638/erro.png')
       .setTimestamp()
       .setFooter('Covil', 'https://cdn.discordapp.com/attachments/425141386266935296/782306680759124028/icone.png');
+  
   if(message.author.bot) return;
   if (message.channel.type != "dm" && !message.content.startsWith('jarvis') && !message.content.startsWith(config.prefix)){
     if(message.mentions.members.first()) {
@@ -104,7 +107,7 @@ client.on("message", async message => {
       return 
     }
   }
-  
+ 
   //autenticação 
   if (comando === 'login'){
     try{
@@ -192,6 +195,50 @@ client.on("message", async message => {
     console.error()
   }
   }
+  //comandos prontos
+  if(comando === "info"){
+    try{
+      const busca = await message.fetch("")
+      busca.delete()
+      const terminal = client.channels.cache.get("392697933562118144");
+      const jarvis = message.guild.members.cache.get('703636663473274962') ;
+      
+      if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+        try{
+          const info = new MessageEmbed()
+          .setTitle('Informações do Servidor')
+          .setColor(Cor)
+          .setDescription('\n \n :key: **AUTENTICAÇÃO** \n \n '+
+          '   :one:   **Membro**    -   (Aberto) \n   :two:  **Byte**    -   (requer senha) \n   :three:  **Estudante**    -   (requer senha) \n \n' +
+          `:white_small_square: Voce pode solicitar as senhas no privado do ${jarvis}` +
+          `\n :white_small_square:   Use o comando **.login cargo senha** em ${terminal} para fazer o login` + 
+          '\n \n <a:ironman:813444818444877884>\n \n'+
+          `:white_small_square: Convite do [@J-A-R-V-I-S](https://discord.com/oauth2/authorize?=&client_id=703636663473274962&scope=bot&permissions=8) \n `+
+          `:white_small_square: <a:globo:813455999847366687> Site do servidor : http://thelopes.glitch.me \n`+
+          `:white_small_square: <:covil:781190450488934432> Convite do servidor    :      https://discord.gg/RXNTwcW`)
+          
+          .setImage('https://cdn.discordapp.com/attachments/392710044845604865/781181286122389504/info.png')
+          .setFooter('Qualquer duvida entrar em contato com a Equipe Jarvis')
+          .setURL('https://discord.gg/RXNTwcW')
+          .setTimestamp()
+          await message.channel.send(info)
+          
+        }
+        catch{
+          erro.setDescription("Não foi possivel enviar a mensagem!")
+          await message.author.send(erro)
+        }
+      
+      }
+      
+    }
+    catch{
+      erro.setDescription('Não foi possivel enviar a mensagem')
+      await message.author.send(erro);
+      console.error()
+      }
+    
+  }
   //sistema de fala
   if (comando === "falar"){
     try{
@@ -235,8 +282,8 @@ client.on("message", async message => {
       }
       else{
         try{
-          consoleServer.send(`<**${msg.content}**> Deletada`)
           msg.delete()
+          consoleServer.send(`<**${msg.content}**> Deletada`)
         }
         catch{
           erro.setDescription('Erro ao deletar a mensagem')
@@ -281,15 +328,43 @@ client.on("message", async message => {
       console.error()
     }
   }
+  if(comando === "alertar"){
+    try{
+    const busca = await message.fetch()
+    busca.delete()
+    let alertas = client.channels.cache.get("781170727151206420");
+    const mensagem = args.join(" ");
+    if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
+      try{
+          await alertas.send(mensagem)
+          consoleServer.send(":white_check_mark:  mensagem enviada com sucesso!")}
+      catch{
+         erro.setDescription('Não foi possivel enviar a mensagem')
+         await message.author.send(erro);
+      }
+      
+    }
+    else{
+      erro.setDescription('Você não tem permissão')
+      await message.author.send(erro);
+    }
+    }catch{
+      erro.setDescription('Não foi possivel enviar a mensagem')
+      await message.author.send(erro);
+      console.error()
+    }
+  }
   if(message.channel.type === "dm"){
     try{
       try{
-        if(message.channel.lastMessage.attachments){
+        arquivo = message.channel.lastMessage.attachments.map(c => c.url)
+  
+        if(arquivo.length == 1){
           const link = message.channel.lastMessage.attachments.map(c => c.url)
           const arquivo = new MessageAttachment(link[0])
           const msg = `O membro **${message.author}** enviou um arquivo:`
           await consoleServer.send(msg)
-          await consoleServer.send(arquivo)
+          await consoleServer.send(arquivo) 
           return
         }
         
@@ -389,7 +464,6 @@ client.on("message", async message => {
       const busca = await message.fetch("noticia")
       busca.delete()
       if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
-      
         const imagem = args[0]
         const fonte = args[1]
         let texto = args.slice(2).join(' ')
@@ -404,8 +478,7 @@ client.on("message", async message => {
         if(fonte.includes('https:')){
           noticia.setURL(fonte)
         }
-  
-        const confirm = await message.channel.send('Envie a palavra "enviar" ou uma menção')
+        const confirm = await message.channel.send(noticia)
           const timer = setInterval(() => {
             if(message.channel.lastMessage.content == 'enviar'){
                 message.channel.lastMessage.delete()
@@ -420,7 +493,7 @@ client.on("message", async message => {
                 canal.send(noticia)
                 clearInterval(timer)
               }
-          },1000)
+          },6000)
           setTimeout(()=> {
             if(timer._destroyed == false){
               clearInterval(timer)
@@ -429,7 +502,7 @@ client.on("message", async message => {
             else{
               consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
             }  
-          },5000)
+          },6100)
         
     }
     }catch{
@@ -846,7 +919,7 @@ client.on("message", async message => {
         { name: 'Usuarios', value: `${client.users.cache.size}`,inline: true},
         { name: 'Servidores', value: `${client.guilds.cache.size}`,inline: true},   
         { name: 'Canais', value: `${client.channels.cache.size}`,inline: true},
-        {name: '_', value: '[Home](https://discord.gg/RXNTwcW)',inline: true }
+        {name: `<a:status:813454757506842705>`, value: '[Home](https://discord.gg/RXNTwcW)'}
         
         )
       .setFooter('Hospedado em https://discloudbot.com')
@@ -1064,11 +1137,7 @@ client.on("message", async message => {
       let text = message.guild.channels.cache.find(c => c.name === "💬chat");
       let voice = message.guild.channels.cache.find(c => c.name === "🔊CHAMADA");
       let cargo = message.guild.roles.cache.get(sala.chave)
-      /*if(!args[0]){
-          erro.setDescription('Você precisa informar a chave da sala')
-          await message.channel.send(erro)
-        }*/
-      //else{
+      
         await categoria.delete()
         await text.delete()
         await voice.delete()
