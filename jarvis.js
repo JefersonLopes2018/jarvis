@@ -14,6 +14,7 @@ var sala = new Object();
 sala.aberta = false
 sala.dono = ''
 sala.chave = ''
+sala.cargo = ''
 
 client.on("ready", () => {
   console.log('Iniciando...');
@@ -1047,7 +1048,7 @@ client.on("message", async message => {
   //salas
 
   if(comando === "salaconect"){
-    try{
+   try{
     const busca = await message.fetch()
     busca.delete()
     try{
@@ -1061,18 +1062,21 @@ client.on("message", async message => {
         erro.setDescription('Chave de acesso invalida!')
         const envio = await message.channel.send(erro)
         setTimeout(() => envio.delete(), 3000 )
-        return 
+        return
       }
-      await message.member.roles.add(args[0])
-      let sala = message.guild.channels.cache.find(c => c.name === "💬chat");
-      sala.send(`${message.author} entrou na sala`)
+      else if(message.member.roles.cache.has(sala.cargo)){
+        return
+      }
+      await message.member.roles.add(sala.cargo)
+      let salaDiscord = message.guild.channels.cache.find(c => c.name === "💬chat");
+      salaDiscord.send(`${message.author} entrou na sala`)
       const convite = new MessageEmbed()
       .setTitle('Sala liberada para ' + message.author.tag)
       .setColor(Cor)
-      .setDescription(' \n \n [Ir para sala](https://discordapp.com/channels/'+ message.guild.id +'/'+ sala.id +')')
+      .setDescription(' \n \n [Ir para sala](https://discordapp.com/channels/'+ message.guild.id +'/'+ salaDiscord.id +')')
       .setFooter('Essa sala pode ser fechada usando o comando  .delsala ')
       await message.channel.send(convite)
-    }
+   }
     catch{
       erro.setDescription('Erro ao entrar na sala')
       await message.author.send(erro)
@@ -1112,13 +1116,14 @@ client.on("message", async message => {
       const convite = new MessageEmbed()
       .setTitle(':white_check_mark: Sala criada!')
       .setColor(Cor)
-      .setDescription(' \n Chave da sala : '+ cargo.id)
+      .setDescription(' \n Chave da sala : '+ canal.id)
       .setTimestamp()
       await message.member.roles.add(cargo.id)
       await canal.send(convite)
       sala.aberta = true
       sala.dono = message.author.tag
-      sala.chave = cargo.id
+      sala.chave = canal.id
+      sala.cargo = cargo.id
    }
     catch{
      erro.setDescription('Erro ao criar sala')
@@ -1136,7 +1141,7 @@ client.on("message", async message => {
       let categoria = message.guild.channels.cache.find(c => c.name === "🎮SALA");
       let text = message.guild.channels.cache.find(c => c.name === "💬chat");
       let voice = message.guild.channels.cache.find(c => c.name === "🔊CHAMADA");
-      let cargo = message.guild.roles.cache.get(sala.chave)
+      let cargo = message.guild.roles.cache.get(sala.cargo)
       
         await categoria.delete()
         await text.delete()

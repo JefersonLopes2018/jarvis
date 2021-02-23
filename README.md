@@ -1,1 +1,1 @@
-Versão 2.3
+Versão 2.5
