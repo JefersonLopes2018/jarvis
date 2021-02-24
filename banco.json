@@ -1,4 +1,30 @@
 {
+  "config": [
+    {
+      "id": "B7",
+      "ativo": "false",
+      "author": "",
+      "authorID": "",
+      "inicio": "",
+      "dia": ""
+    },
+    {
+      "id": "ALURA",
+      "ativo": "false",
+      "author": "",
+      "authorID": "",
+      "inicio": "",
+      "dia": ""
+    },
+    {
+      "id": "ORIGAMID",
+      "ativo": "false",
+      "author": "",
+      "authorID": "",
+      "inicio": "",
+      "dia": ""
+    }
+  ],
   "documentação": [
     {
       "id": "python",

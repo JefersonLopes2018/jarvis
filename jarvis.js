@@ -108,7 +108,6 @@ client.on("message", async message => {
       return 
     }
   }
- 
   //autenticação 
   if (comando === 'login'){
     try{
@@ -1296,7 +1295,109 @@ client.on("message", async message => {
       console.error()
     }
   } 
+  //Codigo desenvolvido para o servidor Byte jr.
+
+  if(comando === "curso"){
+    const data = new Date()
+    let hora = ""
+    if(data.getHours() < 10){
+      hora = '0'+ data.getHours() + ':' + data.getMinutes()
+    }
+    else{
+      hora = data.getHours() + ':' + data.getMinutes()
+    }
+    try{
+      const busca = await message.fetch("")
+      busca.delete()
   
+      if(!args[0]){
+        const curso = db.get('config').value()
+        let b7 = curso[0].inicio.hora
+        let alura = curso[1].inicio.hora
+        let origamid = curso[2].inicio.hora
+        if(!b7){
+          b7 = ' '
+        }
+        if(!alura){
+          alura = ' '
+        }
+        if(!origamid){
+          origamid = ' '
+        }
+        const tabela = new MessageEmbed()
+        .setTitle("<a:status:813454757506842705> Tabela de cursos")
+        .setColor(Cor)
+        .setDescription(
+        `:white_small_square: [B7](https://alunos.b7web.com.br/login)   ${curso[0].author}     | ${b7}\n` +
+        `:white_small_square: [ALURA](https://www.alura.com.br)         ${curso[1].author}     | ${alura} \n`+
+        `:white_small_square: [ORIGAMID](https://www.origamid.com)      ${curso[2].author}     | ${origamid} `
+      )
+        .setFooter('Qualquer problema ou duvida entre em contato com a equipe jarvis')
+        .setTimestamp()
+        await message.channel.send(tabela)
+        
+        return
+      }
+      let entrada = args[0]
+      const plataforma = entrada.toUpperCase()
+      const curso = db.get('config').find({id: plataforma}).value()
+      const day = data.getDate()
+
+      if(day != curso.dia.day){
+        db.get('config').find({id: plataforma}).assign({ativo: 'false'},{author: ""},{inicio: ""},{authorID: ""}, {dia:""}).write()
+      }  
+      if(curso.ativo === 'false'){
+        await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi ativada em nome de ${message.member.user.username}`)
+        db.get('config').find({id: plataforma}).assign({ativo: 'true'},{author: message.member.user.username},{authorID: message.member.id},{inicio: {hora}}, {dia:{day}}).write()
+        return 
+        
+      }
+
+      let time = parseInt(curso.inicio.hora.substr(0, 2))
+      timeM = parseInt(curso.inicio.hora.substr(3,2)) 
+      time = parseInt(data.getHours()) - time
+
+      timeM = parseInt(data.getMinutes()) - timeM
+      if(timeM < 0){
+        time = time -= 1
+        timeM = timeM + 60
+            }
+      
+      if(curso.ativo === 'true' && args[1] != 'force'){
+        if(curso.author == message.member.user.username){
+          db.get('config').find({id: plataforma}).assign({ativo: 'false'},{author: ""},{authorID:""},{inicio:""},{dia:""}).write()
+          await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi desativada em nome de ${message.member.user.username}`)
+          return
+        }
+        else{
+          await message.channel.send(`<a:status:813454757506842705> A plataforma ${entrada} está sendo usada por ${curso.author} á ${time} horas e ${timeM} minutos`)
+        }
+        
+      }
+      
+      if(args[1] == 'force'){
+        timeM = timeM /60 
+        time = time + timeM
+        if(time >= 4){
+          const member = message.guild.members.cache.get(curso.authorID)
+          await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi ativada em nome de ${message.member.user.username}`)
+          await member.send(`${message.author} pegou seu acesso a ${plataforma} por está em seu nome a mais de 4 horas.`)
+            db.get('config').find({id: plataforma}).assign({ativo: 'true'},{author: message.member.user.username},{authorID: message.member.id},{inicio: {hora}}, {dia:{day}}).write()
+          return
+        }
+        else{
+          await message.reply(`Não é possivel usar o force pois ${curso.author} não ultrapassou as 4 horas`)
+          return
+        }
+        
+      }
+     
+
+    }
+    catch{
+      console.log('erro')
+    }
+  }
 });
 
 client.login(config.token);
