@@ -1328,10 +1328,12 @@ client.on("message", async message => {
         .setTitle("<a:status:813454757506842705> Tabela de cursos")
         .setColor(Cor)
         .setDescription(
-        `:white_small_square: [B7](https://alunos.b7web.com.br/login)   ${curso[0].author}     | ${b7}\n` +
-        `:white_small_square: [ALURA](https://www.alura.com.br)         ${curso[1].author}     | ${alura} \n`+
-        `:white_small_square: [ORIGAMID](https://www.origamid.com)      ${curso[2].author}     | ${origamid} `
+        `:white_small_square: [B7](https://alunos.b7web.com.br/login)   ${curso[0].author}      ${b7}\n` +
+        `:white_small_square: [ALURA](https://www.alura.com.br)         ${curso[1].author}      ${alura} \n`+
+        `:white_small_square: [ORIGAMID](https://www.origamid.com)      ${curso[2].author}      ${origamid} `
       )
+        .setThumbnail('https://cdn.discordapp.com/attachments/777909174453141525/814168340423114873/Logo---Versao-Responsiva.png')
+        .setImage('https://cdn.discordapp.com/attachments/777909174453141525/814173638679986217/backgrounCurso.png')
         .setFooter('Qualquer problema ou duvida entre em contato com a equipe jarvis')
         .setTimestamp()
         await message.channel.send(tabela)

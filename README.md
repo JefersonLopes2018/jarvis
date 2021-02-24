@@ -1,1 +1,1 @@
-Versão 2.6
+Versão 2.7
