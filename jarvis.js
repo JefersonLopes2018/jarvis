@@ -1148,7 +1148,6 @@ client.on("message", async message => {
         await cargo.delete()
         sala.aberta = false
         await message.author.send(":white_check_mark: Sala Deletada")
-      //} 
       
     }
     catch{
@@ -1298,7 +1297,17 @@ client.on("message", async message => {
   //Codigo desenvolvido para o servidor Byte jr.
 
   if(comando === "curso"){
-    const data = new Date()
+    try{
+      if(message.guild.id != '730069592030052376')return
+      if(message.member.roles.cache.has("782232736332251156")){
+        message.reply('Sistema privado para membros da byte')
+        return
+      }
+      
+    const data = new Date() //'GMT -3/UTC-3')
+    data.setHours(-3)
+    //console.log(data.toLocaleTimeString('pt-BR'))
+    
     let hora = ""
     if(data.getHours() < 10){
       hora = '0'+ data.getHours() + ':' + data.getMinutes()
@@ -1306,9 +1315,8 @@ client.on("message", async message => {
     else{
       hora = data.getHours() + ':' + data.getMinutes()
     }
-    try{
       const busca = await message.fetch("")
-      busca.delete()
+      busca.react('<a:carta:814308606711037994>')
   
       if(!args[0]){
         const curso = db.get('config').value()
@@ -1325,8 +1333,8 @@ client.on("message", async message => {
           origamid = ' '
         }
         const tabela = new MessageEmbed()
-        .setTitle("<a:status:813454757506842705> Tabela de cursos")
-        .setColor(Cor)
+        .setTitle("<a:globo:813455999847366687> Tabela de cursos")
+        .setColor('#47dd93')
         .setDescription(
         `:white_small_square: [B7](https://alunos.b7web.com.br/login)   ${curso[0].author}      ${b7}\n` +
         `:white_small_square: [ALURA](https://www.alura.com.br)         ${curso[1].author}      ${alura} \n`+
@@ -1334,9 +1342,9 @@ client.on("message", async message => {
       )
         .setThumbnail('https://cdn.discordapp.com/attachments/777909174453141525/814168340423114873/Logo---Versao-Responsiva.png')
         .setImage('https://cdn.discordapp.com/attachments/777909174453141525/814173638679986217/backgrounCurso.png')
-        .setFooter('Qualquer problema ou duvida entre em contato com a equipe jarvis')
+        .setFooter('Qualquer problema ou duvida entre em contato com TheLopes#5834')
         .setTimestamp()
-        await message.channel.send(tabela)
+        await message.author.send(tabela)
         
         return
       }
@@ -1388,7 +1396,9 @@ client.on("message", async message => {
           return
         }
         else{
-          await message.reply(`Não é possivel usar o force pois ${curso.author} não ultrapassou as 4 horas`)
+          await message.reply(`Não é possivel usar o force pois ${curso.author} não ultrapassou as 4 horas minimas \n *Nota: Foi enviado uma solicitação ao ${curso.author} pedindo o acesso.*`)
+          const member = message.guild.members.cache.get(curso.authorID)
+          await member.send(`${message.author} solicitou acesso a ${plataforma}, se você não estiver mais usando, por favor vá em um canal no servidor e use o comando **.curso ${plataforma}**`)
           return
         }
         
@@ -1397,7 +1407,8 @@ client.on("message", async message => {
 
     }
     catch{
-      console.log('erro')
+      erro.setDescription('Ocorreu um erro ao usar o sistema de controle de acesso aos cursos')
+      await message.author.send(erro)
     }
   }
 });
