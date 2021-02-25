@@ -1303,9 +1303,9 @@ client.on("message", async message => {
         message.reply('Sistema privado para membros da byte')
         return
       }
-      
-    const data = new Date() //'GMT -3/UTC-3')
-    //data.setHours(-3)
+    const data = new Date()
+    data.setHours(parseInt(data.getHours() - 3))
+   
     //console.log(data.toLocaleTimeString('pt-BR'))
     
     let hora = ""
