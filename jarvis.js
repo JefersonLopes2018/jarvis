@@ -1305,7 +1305,7 @@ client.on("message", async message => {
       }
       
     const data = new Date() //'GMT -3/UTC-3')
-    data.setHours(-3)
+    //data.setHours(-3)
     //console.log(data.toLocaleTimeString('pt-BR'))
     
     let hora = ""
