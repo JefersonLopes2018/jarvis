@@ -1296,7 +1296,7 @@ client.on("message", async message => {
   } 
   //Codigo desenvolvido para o servidor Byte jr.
 
-  if(comando === "curso" || comando === "plataforma" || comando === "c" || comando === "ativar" || comando === "desativar"){
+  if(comando ==="tabela" || comando === "curso" || comando === "plataforma" || comando === "c" || comando === "ativar" || comando === "desativar"){
     try{
       if(message.guild.id != '730069592030052376')return
       if(message.member.roles.cache.has("782232736332251156")){
@@ -1315,9 +1315,9 @@ client.on("message", async message => {
       hora = data.getHours() + ':' + data.getMinutes()
     }
       const busca = await message.fetch("")
-      busca.react('<a:carta:814308606711037994>')
-  
+      busca.delete()
       if(!args[0]){
+        //busca.react('<a:carta:814308606711037994>')
         if(comando === "ativar" || comando === "desativar")return
         const curso = db.get('config').value()
         let b7 = curso[0].inicio.hora
@@ -1344,10 +1344,11 @@ client.on("message", async message => {
         .setImage('https://cdn.discordapp.com/attachments/777909174453141525/814173638679986217/backgrounCurso.png')
         .setFooter('Qualquer problema ou duvida entre em contato com TheLopes#5834')
         .setTimestamp()
-        await message.author.send(tabela)
+        await message.channel.send(tabela)
         
         return
       }
+      
       let entrada = args[0]
       const plataforma = entrada.toUpperCase()
       const curso = db.get('config').find({id: plataforma}).value()
@@ -1398,15 +1399,15 @@ client.on("message", async message => {
       if(args[1] == 'force'){
         timeM = timeM /60 
         time = time + timeM
-        if(time >= 4){
+        if(time >= 2){
           const member = message.guild.members.cache.get(curso.authorID)
           await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi ativada em nome de ${message.member.user.username}`)
-          await member.send(`${message.author} pegou seu acesso a ${plataforma} por está em seu nome a mais de 4 horas.`)
+          await member.send(`${message.author} pegou seu acesso a ${plataforma} por está em seu nome a mais de 2 horas.`)
             db.get('config').find({id: plataforma}).assign({ativo: 'true'},{author: message.member.user.username},{authorID: message.member.id},{inicio: {hora}}, {dia:{day}}).write()
           return
         }
         else{
-          await message.reply(`Não é possivel usar o force pois ${curso.author} não ultrapassou as 4 horas minimas \n *Nota: Foi enviado uma solicitação ao ${curso.author} pedindo o acesso.*`)
+          await message.reply(`Não é possivel usar o force pois ${curso.author} não ultrapassou as 2 horas minimas \n *Nota: Foi enviado uma solicitação ao ${curso.author} pedindo o acesso.*`)
           const member = message.guild.members.cache.get(curso.authorID)
           await member.send(`${message.author} solicitou acesso a ${plataforma}, se você não estiver mais usando, por favor vá em um canal no servidor e use o comando **.desativar ${plataforma}**`)
           return
