@@ -11,12 +11,16 @@
     },
     {
       "id": "ALURA",
-      "ativo": "false",
-      "author": "",
-      "authorID": "",
-      "inicio": "",
-      "dia": "",
-      "cursos": []
+      "ativo": "true",
+      "author": "Jeferson",
+      "authorID": "334359138110799872",
+      "inicio": "21:19",
+      "dia": 2,
+      "cursos": [
+        "HTTP: Entendendo a web por baixo dos panos",
+        "Linux I: Conhecendo e utilizando o terminal",
+        "Linux II: Programas processos e pacotes"
+      ]
     },
     {
       "id": "ORIGAMID",
@@ -31,7 +35,9 @@
       "id": "colaboradores",
       "Janeiro": [],
       "Fevereiro": [],
-      "Março": [],
+      "Março": [
+        "Jeferson"
+      ],
       "Abril": [],
       "Maio": [],
       "Junho": [],

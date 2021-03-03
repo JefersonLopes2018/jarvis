@@ -1423,6 +1423,8 @@ client.on("message", async message => {
   }
   if(comando === "b7" || comando === "alura" || comando === "origamid" || comando === "membros"){
     try{
+      const busca = await message.fetch("")
+      busca.delete()
       const command = client.channels.cache.get('815014553666453515')
       if(message.guild.id != '730069592030052376')return
       if(message.member.roles.cache.has("782232736332251156")){
@@ -1439,15 +1441,13 @@ client.on("message", async message => {
       const data = new Date()
       const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
     
-      
       let entrada = comando
-      const op = args[0]
+      let op = args[0]
       const name = args.slice(1).join(' ')
       const mes = meses[data.getMonth()]
       const colaboradores = db.get('config').find({id: 'colaboradores'})
       const membros = colaboradores.value()[mes]
       if(comando === "membros"){
-        
         let valor = ''
         if(op){
           op = op[0].toUpperCase() + op.substr(1);
@@ -1456,9 +1456,8 @@ client.on("message", async message => {
         else{
           valor = mes
         }
-        
-        const list = colaboradores.value()[valor]
-        const texto = list.toString()
+        let list = colaboradores.value()[valor]
+        let texto = list.toString()
         let lista = texto.replace(/,/g, "\n :white_small_square: ")
         const tabela = new MessageEmbed()
         .setTitle(`<a:globo:813455999847366687> Membros do mes de ${valor}`)
@@ -1523,7 +1522,7 @@ client.on("message", async message => {
       else{
         erro.setDescription(`Não informou os parametros corretamente`)
         const envio = await message.channel.send(erro)
-        erro.delete({timeout: 3000})
+        envio.delete({timeout: 3000})
         return
       }
       
