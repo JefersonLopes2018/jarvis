@@ -1297,16 +1297,16 @@ client.on("message", async message => {
   //Codigo desenvolvido para o servidor Byte jr.
 
   if(comando ==="tabela" || comando === "curso" || comando === "plataforma" || comando === "c" || comando === "ativar" || comando === "desativar"){
-    const busca = await message.fetch("")
-    busca.delete()
-    const command = client.channels.cache.get('815014553666453515')
     try{
+    const command = client.channels.cache.get('815014553666453515')
       if(message.guild.id != '730069592030052376')return
       if(message.member.roles.cache.has("782232736332251156")){
         message.reply('Sistema privado para membros da byte')
         return
       }
       if(message.channel.id != '815014553666453515'){
+        const busca1 = await message.fetch("")
+        busca1.delete()
         const envio = await message.channel.send(`Vá para o canal ${command}`)
         envio.delete({timeout: 5000})
         return
@@ -1423,19 +1423,19 @@ client.on("message", async message => {
   }
   if(comando === "b7" || comando === "alura" || comando === "origamid" || comando === "membros"){
     try{
-      const busca = await message.fetch("")
-      busca.delete()
       const command = client.channels.cache.get('815014553666453515')
       if(message.guild.id != '730069592030052376')return
       if(message.member.roles.cache.has("782232736332251156")){
-          message.reply('Sistema privado para membros da byte')
-          return
+        message.reply('Sistema privado para membros da byte')
+        return
       }
       if(message.channel.id != '815014553666453515'){
-          const envio = await message.channel.send(`Vá para o canal ${command}`)
-          envio.delete({timeout: 5000})
-          return
-      }
+        const busca1 = await message.fetch("")
+        busca1.delete()
+        const envio = await message.channel.send(`Vá para o canal ${command}`)
+        envio.delete({timeout: 5000})
+        return
+    }
       const data = new Date()
       const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
     
