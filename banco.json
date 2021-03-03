@@ -6,7 +6,8 @@
       "author": "",
       "authorID": "",
       "inicio": "",
-      "dia": ""
+      "dia": "",
+      "cursos": []
     },
     {
       "id": "ALURA",
@@ -14,7 +15,8 @@
       "author": "",
       "authorID": "",
       "inicio": "",
-      "dia": ""
+      "dia": "",
+      "cursos": []
     },
     {
       "id": "ORIGAMID",
@@ -22,7 +24,23 @@
       "author": "",
       "authorID": "",
       "inicio": "",
-      "dia": ""
+      "dia": "",
+      "cursos": []
+    },
+    {
+      "id": "colaboradores",
+      "Janeiro": [],
+      "Fevereiro": [],
+      "Março": [],
+      "Abril": [],
+      "Maio": [],
+      "Junho": [],
+      "Julho": [],
+      "Agosto": [],
+      "Setembro": [],
+      "Outubro": [],
+      "Novembro": [],
+      "Dezembro": []
     }
   ],
   "documentação": [

@@ -144,7 +144,7 @@ client.on("message", async message => {
               { name: 'Byte', value: logado[1], inline: true },
               { name: 'Estudante', value: logado[2], inline: true },
             )
-            
+      
       await message.channel.send(login)
     }
     if(cargo === 'membro'){
@@ -1303,6 +1303,11 @@ client.on("message", async message => {
         message.reply('Sistema privado para membros da byte')
         return
       }
+      if(message.channel.id != '813816220637331466'){
+        const envio = await message.channel.send(`Vá para o canal ${command}`)
+        envio.delete({timeout: 5000})
+        return
+    }
       
     const data = new Date()
     data.setHours(parseInt(data.getHours() - 3))
@@ -1320,18 +1325,10 @@ client.on("message", async message => {
         //busca.react('<a:carta:814308606711037994>')
         if(comando === "ativar" || comando === "desativar")return
         const curso = db.get('config').value()
-        let b7 = curso[0].inicio.hora
-        let alura = curso[1].inicio.hora
-        let origamid = curso[2].inicio.hora
-        if(!b7){
-          b7 = ' '
-        }
-        if(!alura){
-          alura = ' '
-        }
-        if(!origamid){
-          origamid = ' '
-        }
+        let b7 = curso[0].inicio
+        let alura = curso[1].inicio
+        let origamid = curso[2].inicio
+    
         const tabela = new MessageEmbed()
         .setTitle("<a:globo:813455999847366687> Tabela de cursos")
         .setColor('#47dd93')
@@ -1354,7 +1351,7 @@ client.on("message", async message => {
       const curso = db.get('config').find({id: plataforma}).value()
       const day = data.getDate()
 
-      if(day != curso.dia.day){
+      if(day != curso.dia){
         db.get('config').find({id: plataforma}).assign({ativo: 'false'},{author: ""},{inicio: ""},{authorID: ""}, {dia:""}).write()
       }  
       if(curso.ativo === 'false'){
@@ -1362,14 +1359,14 @@ client.on("message", async message => {
           await message.channel.send(`<a:status:813454757506842705> Plataforma já está desativada.`)
           return
         }
-        await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi ativada em nome de ${message.member.user.username}`)
-        db.get('config').find({id: plataforma}).assign({ativo: 'true'},{author: message.member.user.username},{authorID: message.member.id},{inicio: {hora}}, {dia:{day}}).write()
+        await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi ativada em nome de ${message.member.displayName}`)
+        db.get('config').find({id: plataforma}).assign({ativo: 'true'},{author: message.member.displayName},{authorID: message.member.id},{inicio: hora}, {dia:day}).write()
         return 
         
       }
 
-      let time = parseInt(curso.inicio.hora.substr(0, 2))
-      timeM = parseInt(curso.inicio.hora.substr(3,2)) 
+      let time = parseInt(curso.inicio.substr(0, 2))
+      timeM = parseInt(curso.inicio.substr(3,2)) 
       time = parseInt(data.getHours()) - time
 
       timeM = parseInt(data.getMinutes()) - timeM
@@ -1380,12 +1377,12 @@ client.on("message", async message => {
       
       if(curso.ativo === 'true' && args[1] != 'force'){
         if(comando === "ativar"){
-          await message.channel.send(`<a:status:813454757506842705> Plataforma já está ativa em nome de ${curso.author}.`)
+          await message.channel.send(`<a:status:813454757506842705> Plataforma já está ativa em nome de ${curso.author} com ${time} horas e ${timeM} minutos.`)
           return
         }
-        if(curso.author == message.member.user.username){
+        if(curso.authorID == message.author.id){
           db.get('config').find({id: plataforma}).assign({ativo: 'false'},{author: ""},{authorID:""},{inicio:""},{dia:""}).write()
-          await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi desativada em nome de ${message.member.user.username}`)
+          await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi desativada em nome de ${message.member.displayName} com ${time} horas e ${timeM} minutos.`)
           return
         }
         else{
@@ -1401,13 +1398,13 @@ client.on("message", async message => {
         time = time + timeM
         if(time >= 2){
           const member = message.guild.members.cache.get(curso.authorID)
-          await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi ativada em nome de ${message.member.user.username}`)
+          await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi ativada em nome de ${message.member.displayName}`)
           await member.send(`${message.author} pegou seu acesso a ${plataforma} por está em seu nome a mais de 2 horas.`)
-            db.get('config').find({id: plataforma}).assign({ativo: 'true'},{author: message.member.user.username},{authorID: message.member.id},{inicio: {hora}}, {dia:{day}}).write()
+            db.get('config').find({id: plataforma}).assign({ativo: 'true'},{author: message.member.displayName},{authorID: message.member.id},{inicio: hora}, {dia:day}).write()
           return
         }
         else{
-          await message.reply(`Não é possivel usar o force pois ${curso.author} não ultrapassou as 2 horas minimas \n *Nota: Foi enviado uma solicitação ao ${curso.author} pedindo o acesso.*`)
+          await message.reply(`Não é possivel usar o force pois ${curso.author} não ultrapassou as 2 horas minimas, está com com ${time} horas e ${timeM} minutos. \n *Nota: Foi enviado uma solicitação ao ${curso.author} pedindo o acesso.*`)
           const member = message.guild.members.cache.get(curso.authorID)
           await member.send(`${message.author} solicitou acesso a ${plataforma}, se você não estiver mais usando, por favor vá em um canal no servidor e use o comando **.desativar ${plataforma}**`)
           return
@@ -1421,6 +1418,120 @@ client.on("message", async message => {
       await message.author.send(erro)
     }
   }
+  if(comando === "b7" || comando === "alura" || comando === "origamid" || comando === "membros"){
+    try{
+      const busca = await message.fetch("")
+      busca.delete()
+      const command = client.channels.cache.get('813816220637331466')
+      if(message.guild.id != '730069592030052376')return
+      if(message.member.roles.cache.has("782232736332251156")){
+          message.reply('Sistema privado para membros da byte')
+          return
+      }
+      if(message.channel.id != '813816220637331466'){
+          const envio = await message.channel.send(`Vá para o canal ${command}`)
+          envio.delete({timeout: 5000})
+          return
+      }
+      const data = new Date()
+      const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
+    
+      
+      let entrada = comando
+      const op = args[0]
+      const name = args.slice(1).join(' ')
+      const mes = meses[data.getMonth()]
+      const colaboradores = db.get('config').find({id: 'colaboradores'})
+      const membros = colaboradores.value()[mes]
+      if(comando === "membros"){
+        
+        let valor = ''
+        if(op){
+          op = op[0].toUpperCase() + op.substr(1);
+          valor = op
+        }
+        else{
+          valor = mes
+        }
+        
+        const list = colaboradores.value()[valor]
+        const texto = list.toString()
+        let lista = texto.replace(/,/g, "\n :white_small_square: ")
+        const tabela = new MessageEmbed()
+        .setTitle(`<a:globo:813455999847366687> Membros do mes de ${valor}`)
+        .setColor('#47dd93')
+        .setDescription(
+        `:white_small_square: ${lista}` 
+        )
+        .setThumbnail('https://cdn.discordapp.com/attachments/777909174453141525/814168340423114873/Logo---Versao-Responsiva.png')
+        .setFooter('Qualquer problema ou duvida entre em contato com TheLopes#5834')
+        .setTimestamp()
+        await message.channel.send(tabela)
+        return
+      }
+      const plataforma = entrada.toUpperCase()
+      const curso = db.get('config').find({id: plataforma}).value()
+      let lista = curso.cursos
+      if(!op){
+        
+        const texto = lista.toString()
+        let textoA = texto.replace(/,/g, "\n :white_small_square: ")
+        
+        const tabela = new MessageEmbed()
+        .setTitle(`<a:globo:813455999847366687> Cursos da plataforma ${comando}`)
+        .setColor('#47dd93')
+        .setDescription(
+        `:white_small_square: ${textoA}` 
+        )
+        .setThumbnail('https://cdn.discordapp.com/attachments/777909174453141525/814168340423114873/Logo---Versao-Responsiva.png')
+        .setFooter('Qualquer problema ou duvida entre em contato com TheLopes#5834')
+        .setTimestamp()
+        
+        await message.channel.send(tabela)
+      }
+      else if(!name){
+        erro.setDescription(`Não informou o nome do curso`)
+        const envio = await message.channel.send(erro)
+        erro.delete({timeout: 5000})
+        return
+      }
+      else if(op == 'add'){
+        lista.push(name)
+        if(membros.indexOf(message.member.displayName) < 0){
+          membros.push(message.member.displayName)
+        }
+        await db.get('config').find({id: plataforma}).assign({cursos: lista}).write()
+        await colaboradores.assign({[mes] : membros})
+        await message.channel.send(`:white_check_mark: **${name}** adicionado com sucesso`)
+        return
+      }
+      else if(op == 'remove'){
+          if(lista.indexOf(name) < 0){
+            erro.setDescription('Curso não encontrado')
+            const envio = await message.channel.send(erro)
+            envio.delete({timeout: 3000})
+            return
+          }
+          lista.splice(lista.indexOf(name), 1)
+          await db.get('config').find({id: plataforma}).assign({cursos: lista}).write()
+          await message.channel.send(`:white_check_mark: **${name}** removido com sucesso`)
+          return
+      }
+      else{
+        erro.setDescription(`Não informou os parametros corretamente`)
+        const envio = await message.channel.send(erro)
+        erro.delete({timeout: 3000})
+        return
+      }
+      
+    }
+    catch{
+      erro.setDescription('Erro inesperado')
+      await message.author.send(erro)
+    }
+  }
+  
+
 });
 
-client.login(config.token);
+client.login(config.tokenDev);
