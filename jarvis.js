@@ -1534,4 +1534,4 @@ client.on("message", async message => {
 
 });
 
-client.login(config.tokenDev);
+client.login(config.token);
