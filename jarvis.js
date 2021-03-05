@@ -100,7 +100,7 @@ client.on("message", async message => {
         await consoleServer.send(`${message.author} Me mencionou no canal ${message.channel}`)
       }
       else if(message.mentions.members.first().id === '334359138110799872'){
-        await message.channel.send(`${message.author} Já avisei ele, daqui a pouco ele aparece.`)
+        //await message.channel.send(`${message.author} Já avisei ele, daqui a pouco ele aparece.`)
         await message.mentions.members.first().send(`${message.author} Te chamou no canal ${message.channel}`)
       }
     }
@@ -602,6 +602,19 @@ client.on("message", async message => {
     }
   }
 ///////////Banco de Dados////////////////
+  if(comando === "database"){
+    try{
+      const busca = await message.fetch("jarvis")
+      busca.delete()
+      const arquivo = new MessageAttachment('banco.json')
+      message.author.send(arquivo)
+    }
+    catch{
+      erro.setDescription("não foi possivel enviar o banco de dados")
+      await message.author.send(erro)
+    
+    }
+  }
   if(comando === 'newbiblioteca'){
     try{
       const busca = await message.fetch("biblioteca")
