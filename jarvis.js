@@ -95,11 +95,11 @@ client.on("message", async message => {
   if(message.author.bot) return;
   if (message.channel.type != "dm" && !message.content.startsWith('jarvis') && !message.content.startsWith(config.prefix)){
     if(message.mentions.members.first()) {
-      if(message.mentions.members.first().id === '703636663473274962'){
+      if(message.mentions.members.first().id == '703636663473274962'){
         await message.channel.send(`${message.author} Opa tranquilo?`)
         await consoleServer.send(`${message.author} Me mencionou no canal ${message.channel}`)
       }
-      else if(message.mentions.members.first().id === '334359138110799872'){
+      else if(message.mentions.members.first().id == '334359138110799872'){
         //await message.channel.send(`${message.author} Já avisei ele, daqui a pouco ele aparece.`)
         await message.mentions.members.first().send(`${message.author} Te chamou no canal ${message.channel}`)
       }
@@ -109,7 +109,7 @@ client.on("message", async message => {
     }
   }
   //autenticação 
-  if (comando === 'login'){
+  if (comando == 'login'){
     try{
     const busca = await message.fetch("login")
     busca.delete()
@@ -147,7 +147,7 @@ client.on("message", async message => {
       
       await message.channel.send(login)
     }
-    if(cargo === 'membro'){
+    if(cargo == 'membro'){
       const embedMembro = new MessageEmbed()
       .setTitle(`:white_check_mark: Logado como ${cargo}`)
       .setColor(Cor)
@@ -158,8 +158,8 @@ client.on("message", async message => {
       setTimeout(() =>  envio.delete(),5000)
   
     }
-    if(cargo === 'byte'){
-      if(senha === 'olaph'){
+    if(cargo == 'byte'){
+      if(senha == 'olaph'){
         const embedMembro = new MessageEmbed()
         .setTitle(`:white_check_mark: Logado como ${cargo}`)
         .setColor(Cor)
@@ -173,8 +173,8 @@ client.on("message", async message => {
         await message.channel.send(`:x: **Acesso negado!**`)
       }
     }
-    if(cargo === 'estudante'){
-      if(senha === '5725'){
+    if(cargo == 'estudante'){
+      if(senha == '5725'){
         const embedMembro = new MessageEmbed()
         .setTitle(`:white_check_mark: Logado como ${cargo}`)
         .setColor(Cor)
@@ -196,7 +196,7 @@ client.on("message", async message => {
   }
   }
   //comandos prontos
-  if(comando === "info"){
+  if(comando == "info"){
     try{
       const busca = await message.fetch("")
       busca.delete()
@@ -239,8 +239,36 @@ client.on("message", async message => {
       }
     
   }
+  if(comando == "regras"){
+    try{
+      const busca = await message.fetch("")
+      busca.delete()
+      const info = client.channels.cache.get("392710044845604865");
+      
+      const regras = new MessageEmbed()
+      .setTitle('Respeite as regras')
+      .setColor(Cor)
+      .setDescription(
+      '🔸 Aqui é um grupo para todo tipo de pessoa, portanto respeite o jeito de cada um. \n \n' +
+      '🔸 Proibido postar de uma forma repetida (spam) ou em sequência (flood). (Essa regra é aplicada para palavras, emoji ou imagens). \n \n'+
+      '🔸 Cada canal tem sua singularidade então RESPEITE! \n \n'+
+      '🔸 Proibido ser x9, levar algo do servidor para fora. \n \n'+
+      '🔸 Proibido divulgar links e servidores nos canais ou no DM dos usuários, caso visto ou reportado haverá punição. \n \n \n' +
+      `Para mais informações passe no canal ${info}`)
+      .setThumbnail('https://cdn.discordapp.com/attachments/714573856613859339/814543708997025822/boneco.gif')
+      .setURL('https://discord.gg/RXNTwcW')
+      .setImage('https://cdn.discordapp.com/attachments/714573856613859339/820067258742734878/regras.png')
+      .setFooter('Qualquer duvida entrar em contato com a Equipe Jarvis')
+      await message.channel.send(regras)
+
+    }
+    catch{
+      erro.setDescription("Não foi possivel enviar as regras!")
+      await message.author.send(erro)
+    }
+  }
   //sistema de fala
-  if (comando === "falar"){
+  if (comando == "falar"){
     try{
     const busca = await message.fetch("")
     busca.delete()
@@ -262,7 +290,7 @@ client.on("message", async message => {
     console.error()
   }
   }
-  if(comando === "editar" || comando === "excluir"){
+  if(comando == "editar" || comando == "excluir"){
     try{
       const busca = await message.fetch()
       busca.delete()
@@ -302,7 +330,7 @@ client.on("message", async message => {
     }
     
   }
-  if(comando === "avisar"){
+  if(comando == "avisar"){
     try{
     const busca = await message.fetch("avisar")
     busca.delete()
@@ -328,7 +356,7 @@ client.on("message", async message => {
       console.error()
     }
   }
-  if(comando === "alertar"){
+  if(comando == "alertar"){
     try{
     const busca = await message.fetch()
     busca.delete()
@@ -354,7 +382,7 @@ client.on("message", async message => {
       console.error()
     }
   }
-  if(message.channel.type === "dm"){
+  if(message.channel.type == "dm"){
     try{
       try{
         arquivo = message.channel.lastMessage.attachments.map(c => c.url)
@@ -379,7 +407,7 @@ client.on("message", async message => {
     console.error()
   }
   }
-  if(comando === "privado"){
+  if(comando == "privado"){
     try{
     const busca = await message.fetch("privado")
     busca.delete()
@@ -403,12 +431,12 @@ client.on("message", async message => {
       console.error()
     }
   }
-  if(comando === "arquivo"){
+  if(comando == "arquivo"){
     try{
       const busca = await message.fetch()
       busca.delete()
-      if(!args[0])return message.channel.send('Não informou o canal')
-      const canal = client.channels.cache.get(args[0])
+      if(!args[0])return message.channel.send('Não informou o canal ou o membro')
+      const canal = client.channels.cache.get(args[0]) || message.mentions.members.first() || message.guild.members.cache.get(args[0])
       const envio = await message.channel.send('Envie o arquivo')
       const cap = setInterval(() => {
         const arquivoInput = message.channel.lastMessage.attachments
@@ -435,7 +463,7 @@ client.on("message", async message => {
       console.error()
     }
   }
-  if(comando ==="time"){
+  if(comando =="time"){
     try{
     const busca = await message.fetch("time")
     busca.delete()
@@ -459,7 +487,7 @@ client.on("message", async message => {
   }
   }
   
-  if(comando === "noticia"){
+  if(comando == "noticia"){
     try{
       const busca = await message.fetch("noticia")
       busca.delete()
@@ -467,7 +495,7 @@ client.on("message", async message => {
         const imagem = args[0]
         const fonte = args[1]
         let texto = args.slice(2).join(' ')
-        let canal = client.channels.cache.get("714572433822187571")
+        let canal = client.channels.cache.get('804189572321378325')//("714572433822187571")
         if(!imagem || !fonte || !texto)return await message.channel.send('Noticia Não passou nas validações')
         const noticia = new MessageEmbed()
         .setTitle(texto)
@@ -480,6 +508,13 @@ client.on("message", async message => {
         }
         const confirm = await message.channel.send(noticia)
           const timer = setInterval(() => {
+            console.log(message.channel.lastMessage.content)
+            if(message.channel.lastMessage.content == 'd'){
+              setTimeout(() => {
+                noticia.setDescription(message.channel.lastMessage.content)
+              },1000)
+              
+          }
             if(message.channel.lastMessage.content == 'enviar'){
                 message.channel.lastMessage.delete()
                 confirm.delete()
@@ -493,7 +528,7 @@ client.on("message", async message => {
                 canal.send(noticia)
                 clearInterval(timer)
               }
-          },6000)
+          },1000)
           setTimeout(()=> {
             if(timer._destroyed == false){
               clearInterval(timer)
@@ -502,7 +537,7 @@ client.on("message", async message => {
             else{
               consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
             }  
-          },6100)
+          },60000)
         
     }
     }catch{
@@ -510,47 +545,35 @@ client.on("message", async message => {
       await message.author.send(erro);
    } 
   }
-  if(comando ==="foto"){
+  if(comando =="foto"){
     try{
     const busca = await message.fetch("foto")
     busca.delete()
     if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
     let link = args[0]
-    let tipo = args[1]
     let mensagem = args.slice(3).join(' ')
     if(!mensagem){
        mensagem = ``
     }
-    if(tipo === "canal"){
-      let id = args[2]
-      let canal = client.channels.cache.get(id)
-      try{
+    let canal = client.channels.cache.get(args[1]) || message.mentions.members.first() || message.guild.members.cache.get(args[1])
+    try{
         await canal.send(mensagem, { files: [link] })
         await consoleServer.send(" :white_check_mark: Foto enviada com sucesso!")
       }
-      catch{
+    catch{
         erro.setDescription(`Erro no envio da foto para ${canal}`)
         await message.author.send(erro);
       }
+   
+    
     }
-    if(tipo === "membro"){
-      let membro =  message.mentions.members.first() || message.guild.members.cache.get(args[2])
-      try{
-        await membro.send(mensagem, { files: [link] })
-        await consoleServer.send(" :white_check_mark: Foto enviada com sucesso!")
-      }
-      catch{
-        erro.setDescription(`Erro no envio da foto para o ${membro}`)
-        await message.author.send(erro);
-      }
-    }}
     }catch{
       erro.setDescription('Erro ao enviar a foto')
       await message.author.send(erro);
       console.error()
     }
   }
-  if (comando === "aqui"){
+  if (comando == "aqui"){
     try{
     const busca = await message.fetch("aqui")
     busca.delete()
@@ -574,7 +597,7 @@ client.on("message", async message => {
         let objeto = servidores[i]
         let chave = Object.keys(objeto)
         const indicie = chave.indexOf('canal')
-        if(chave[indicie] === 'canal'){
+        if(chave[indicie] == 'canal'){
             let canal = client.channels.cache.get(objeto[chave[indicie]])
             canal.send(convite)
             }
@@ -602,7 +625,7 @@ client.on("message", async message => {
     }
   }
 ///////////Banco de Dados////////////////
-  if(comando === "database"){
+  if(comando == "database"){
     try{
       const busca = await message.fetch("jarvis")
       busca.delete()
@@ -615,7 +638,7 @@ client.on("message", async message => {
     
     }
   }
-  if(comando === 'newbiblioteca'){
+  if(comando == 'newbiblioteca'){
     try{
       const busca = await message.fetch("biblioteca")
       busca.delete()
@@ -637,7 +660,7 @@ client.on("message", async message => {
       console.error()
     }
   }
-  if(comando === 'newitem'){
+  if(comando == 'newitem'){
     try{
       const busca = await message.fetch("")
       busca.delete()
@@ -659,7 +682,7 @@ client.on("message", async message => {
     console.error()
   }
   }
-  if(comando === 'newchave' || comando === 'editchave'){
+  if(comando == 'newchave' || comando == 'editchave'){
     try{
       const busca = await message.fetch("")
       busca.delete()
@@ -684,7 +707,7 @@ client.on("message", async message => {
     console.error()
   }
   }
-  if(comando === 'delitem'){
+  if(comando == 'delitem'){
     try{
     const busca = await message.fetch("")
     busca.delete()
@@ -705,7 +728,7 @@ client.on("message", async message => {
     console.error()
   }
  }
-  if(comando === 'acessar'){
+  if(comando == 'acessar'){
     try{
     const busca = await message.fetch("")
     busca.delete()
@@ -723,14 +746,14 @@ client.on("message", async message => {
         for (var i = 0; i < document.length; i++){
           let objeto2 = document[i]
           let chave2 = Object.keys(objeto2)
-          if(biblioteca === 'servidores'){
+          if(biblioteca == 'servidores'){
             msg = msg + objeto2[chave2[1]] + '\n'
           }
           else{
             msg = msg + objeto2[chave2[0]] + '\n'
           }
         }
-        if(biblioteca === 'servidores'){
+        if(biblioteca == 'servidores'){
           embedBiblioteca = new MessageEmbed()
           .setTitle("Servidores")
           .setColor(Cor)
@@ -738,7 +761,7 @@ client.on("message", async message => {
           .setDescription(msg)
           .setThumbnail('https://cdn.discordapp.com/attachments/714573856613859339/789255087004057671/discord.jpg')
         }
-        else if(biblioteca === 'documentação'){
+        else if(biblioteca == 'documentação'){
           embedBiblioteca = new MessageEmbed()
           .setTitle("Documentação")
           .setColor(Cor)
@@ -768,8 +791,8 @@ client.on("message", async message => {
       let chave = Object.keys(objeto)
       for (var i = 0; i < chave.length; i++) {
         if(!especificaçao){
-          if(chave[i] === 'valor'){
-            if(biblioteca === 'repositorios'){
+          if(chave[i] == 'valor'){
+            if(biblioteca == 'repositorios'){
               embedItem = new MessageEmbed()
               .setTitle(item)
               .setColor(Cor)
@@ -778,7 +801,7 @@ client.on("message", async message => {
               .setDescription('[download](' + objeto[chave[i]] +'/archive/master.zip)')
               await message.channel.send(embedItem)
             }
-            else if (biblioteca === 'documentação'){
+            else if (biblioteca == 'documentação'){
               embedItem = new MessageEmbed()
               .setTitle(item)
               .setColor(Cor)
@@ -794,7 +817,7 @@ client.on("message", async message => {
               await message.channel.send(embedItem)
             }
             }
-          if(chave[i] === 'nome'){
+          if(chave[i] == 'nome'){
             try{
               const servidor =  client.guilds.cache.get(item)
               const convite = objeto['convite']
@@ -832,7 +855,7 @@ client.on("message", async message => {
           }  
         }
         else{
-          if(chave[i]=== especificaçao){
+          if(chave[i]== especificaçao){
             embedItem = new MessageEmbed()
               .setTitle(objeto[chave[i]])
               .setColor(Cor)
@@ -855,7 +878,7 @@ client.on("message", async message => {
 ////////////////////////////////////////
 
 //cargos 
-  if(comando === "newcargo"){
+  if(comando == "newcargo"){
     try{
         const busca = await message.fetch("newcargo")
         busca.delete()
@@ -882,7 +905,7 @@ client.on("message", async message => {
       console.error()
     }
   }
-  if(comando === "delcargo"){
+  if(comando == "delcargo"){
     try{
       const busca = await message.fetch("excargo")
       busca.delete()
@@ -908,12 +931,12 @@ client.on("message", async message => {
   }
  
 //sistema de verificação
-  if(comando === "status"){
+  if(comando == "status"){
     try{
     const busca = await message.fetch("status")
     busca.delete()
     const servidores = client.guilds.cache.map(a =>`${a.name}` )
-    if(args[0]=== 'servidores' ){
+    if(args[0]== 'servidores' ){
       if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
           await message.channel.send(`**Servidores cadastrados: ** ${servidores}`)
           client.channels.cache.map(a =>  message.author.send(`${a.name} : ${a.id}\n`))
@@ -943,7 +966,7 @@ client.on("message", async message => {
     console.error('erro')
   }
   }
-  if(comando === "verificar"){
+  if(comando == "verificar"){
     try{
     const busca = await message.fetch("verificar")
     busca.delete()
@@ -969,7 +992,7 @@ client.on("message", async message => {
     console.error()
   }
   }
-  if(comando === "mostrar"){
+  if(comando == "mostrar"){
     try{
     const busca = await message.fetch("mostrar")
     busca.delete()
@@ -984,20 +1007,20 @@ client.on("message", async message => {
       const envio = await message.channel.send(erro)
       setTimeout(() => envio.delete(),3000)
     }
-    else if(tipo === "dono"){
+    else if(tipo == "dono"){
       dados.setTitle(`${message.guild.owner.user.username}`)
       dados.setDescription(`${message.guild.name}`)
       dados.setThumbnail(message.guild.owner.user.avatarURL())
   
       await message.channel.send(dados)
     }
-    else if(tipo === "data"){
+    else if(tipo == "data"){
         if(!nome){
           erro.setDescription('Busca invalida. Não informou o nome')
           const envio = await message.channel.send(erro)
           setTimeout(()=> envio.delete(),3000)
         }
-        if(nome === "canal"){
+        if(nome == "canal"){
           const id = args[2]
           if(!id){
             erro.setDescription('Tentativa invalida. você não informou o ID.')
@@ -1011,15 +1034,15 @@ client.on("message", async message => {
           await message.channel.send(`${canal} foi criado em **${data}**`)
 
         }
-        if(nome ==="membro"){
+        if(nome =="membro"){
           const dados = membro.user.createdAt
           let data = dados.toLocaleDateString()
           await message.channel.send(`O membro ${membro} entrou no discord em **${data}**`)
         }
       }
-    else if(tipo === "canal"){
+    else if(tipo == "canal"){
         if(!nome)return message.channel.send(`${message.author} Busca invalida!`)
-        if(nome === "lista"){
+        if(nome == "lista"){
           const lista = await message.guild.channels.cache.map((i) => i.name);
           dados.setTitle('📜Lista de canais')
           dados.setDescription(lista)
@@ -1027,12 +1050,12 @@ client.on("message", async message => {
         }
         else{
           try{
-            let channel = message.guild.channels.cache.find(c => c.name === nome);
+            let channel = message.guild.channels.cache.find(c => c.name == nome);
             await message.channel.send(`${message.author} Encontrei canal com esse nome. \n ID: ${channel.id}`)
           }
           catch{
             const channelServer = client.channels.cache.map(c => {
-                if(c.name === nome){
+                if(c.name == nome){
                   return c.id
                 }
                 else{
@@ -1059,7 +1082,7 @@ client.on("message", async message => {
   }
   //salas
 
-  if(comando === "salaconect"){
+  if(comando == "salaconnect"){
    try{
     const busca = await message.fetch()
     busca.delete()
@@ -1080,7 +1103,7 @@ client.on("message", async message => {
         return
       }
       await message.member.roles.add(sala.cargo)
-      let salaDiscord = message.guild.channels.cache.find(c => c.name === "💬chat");
+      let salaDiscord = message.guild.channels.cache.find(c => c.name == "💬chat");
       salaDiscord.send(`${message.author} entrou na sala`)
       const convite = new MessageEmbed()
       .setTitle('Sala liberada para ' + message.author.tag)
@@ -1097,7 +1120,7 @@ client.on("message", async message => {
     console.error()
   }
     }
-  if(comando === "sala"){
+  if(comando == "sala"){
     try{
     const busca = await message.fetch("sala")
     busca.delete()
@@ -1122,7 +1145,7 @@ client.on("message", async message => {
           },
         ]}
         ).catch(console.error);
-      const categoria = await message.guild.channels.cache.find(c => c.name === "🎮SALA"); 
+      const categoria = await message.guild.channels.cache.find(c => c.name == "🎮SALA"); 
       const canal = await message.guild.channels.create("💬chat", {type: "text" , parent: categoria.id }).catch(console.error);
       await message.guild.channels.create("🔊CHAMADA", {type: "voice" , parent: categoria.id }).catch(console.error);
       const convite = new MessageEmbed()
@@ -1145,14 +1168,14 @@ client.on("message", async message => {
     console.error()
   }
     }
-  if(comando ==="delsala"){
+  if(comando =="delsala"){
     try{
     const busca = await message.fetch()
     busca.delete()
     try{
-      let categoria = message.guild.channels.cache.find(c => c.name === "🎮SALA");
-      let text = message.guild.channels.cache.find(c => c.name === "💬chat");
-      let voice = message.guild.channels.cache.find(c => c.name === "🔊CHAMADA");
+      let categoria = message.guild.channels.cache.find(c => c.name == "🎮SALA");
+      let text = message.guild.channels.cache.find(c => c.name == "💬chat");
+      let voice = message.guild.channels.cache.find(c => c.name == "🔊CHAMADA");
       let cargo = message.guild.roles.cache.get(sala.cargo)
       
         await categoria.delete()
@@ -1172,7 +1195,7 @@ client.on("message", async message => {
   }
   }
   //moderação
-  if(comando === "delchannel"){
+  if(comando == "delchannel"){
     try{
     let id = args.join(" ")
     let canal = client.channels.cache.get(id);
@@ -1206,7 +1229,7 @@ client.on("message", async message => {
       console.error()
     }
   }
-  if(comando === "newchannel"){
+  if(comando == "newchannel"){
     try{
     const busca = await message.fetch("newchannel")
     busca.delete()
@@ -1235,7 +1258,7 @@ client.on("message", async message => {
     console.error()
   }
   }
-  if (comando === "kick"){
+  if (comando == "kick"){
     try{
     const busca = await message.fetch("kick")
     busca.delete()
@@ -1260,7 +1283,7 @@ client.on("message", async message => {
     console.error()
   }
   }
-  if(comando === "delete"){
+  if(comando == "delete"){
     try{
     const busca = await message.fetch("delete")
     busca.delete()
@@ -1287,7 +1310,7 @@ client.on("message", async message => {
     console.error()
   }
   }
-  if(comando === "state"){
+  if(comando == "state"){
     try{
     const busca = await message.fetch("state")
     busca.delete()
@@ -1309,7 +1332,7 @@ client.on("message", async message => {
   } 
   //Codigo desenvolvido para o servidor Byte jr.
 
-  if(comando ==="tabela" || comando === "curso" || comando === "plataforma" || comando === "c" || comando === "ativar" || comando === "desativar"){
+  if(comando =="tabela" || comando == "curso" || comando == "plataforma" || comando == "c" || comando == "ativar" || comando == "desativar"){
     try{
     const command = client.channels.cache.get('815014553666453515')
       if(message.guild.id != '730069592030052376')return
@@ -1339,7 +1362,7 @@ client.on("message", async message => {
       busca.delete()
       if(!args[0]){
         //busca.react('<a:carta:814308606711037994>')
-        if(comando === "ativar" || comando === "desativar")return
+        if(comando == "ativar" || comando == "desativar")return
         const curso = db.get('config').value()
         let b7 = curso[0].inicio
         let alura = curso[1].inicio
@@ -1370,8 +1393,8 @@ client.on("message", async message => {
       if(day != curso.dia){
         db.get('config').find({id: plataforma}).assign({ativo: 'false'},{author: ""},{inicio: ""},{authorID: ""}, {dia:""}).write()
       }  
-      if(curso.ativo === 'false'){
-        if(comando === "desativar"){
+      if(curso.ativo == 'false'){
+        if(comando == "desativar"){
           await message.channel.send(`<a:status:813454757506842705> Plataforma já está desativada.`)
           return
         }
@@ -1391,8 +1414,8 @@ client.on("message", async message => {
         timeM = timeM + 60
             }
       
-      if(curso.ativo === 'true' && args[1] != 'force'){
-        if(comando === "ativar"){
+      if(curso.ativo == 'true' && args[1] != 'force'){
+        if(comando == "ativar"){
           await message.channel.send(`<a:status:813454757506842705> Plataforma já está ativa em nome de ${curso.author} com ${time} horas e ${timeM} minutos.`)
           return
         }
@@ -1434,7 +1457,7 @@ client.on("message", async message => {
       await message.author.send(erro)
     }
   }
-  if(comando === "b7" || comando === "alura" || comando === "origamid" || comando === "membros"){
+  if(comando == "b7" || comando == "alura" || comando == "origamid" || comando == "membros"){
     try{
       const busca = await message.fetch("")
       busca.delete()
