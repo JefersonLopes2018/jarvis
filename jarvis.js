@@ -629,8 +629,14 @@ client.on("message", async message => {
     try{
       const busca = await message.fetch("jarvis")
       busca.delete()
-      const arquivo = new MessageAttachment('banco.json')
-      message.author.send(arquivo)
+      if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872" || message.guild.id == '730069592030052376'){
+        const arquivo = new MessageAttachment('banco.json')
+        await message.author.send(arquivo)
+      }
+      else{
+        await message.channel.send('Você não está autorizado para ter acesso ao meu banco de dados, me chame no privado pra gente conversar melhor!')
+      }
+      
     }
     catch{
       erro.setDescription("não foi possivel enviar o banco de dados")
@@ -1331,9 +1337,10 @@ client.on("message", async message => {
     }
   } 
   //Codigo desenvolvido para o servidor Byte jr.
-
+  
   if(comando =="tabela" || comando == "curso" || comando == "plataforma" || comando == "c" || comando == "ativar" || comando == "desativar"){
     try{
+     
     const command = client.channels.cache.get('815014553666453515')
       if(message.guild.id != '730069592030052376')return
       if(message.member.roles.cache.has("782232736332251156")){
@@ -1347,7 +1354,7 @@ client.on("message", async message => {
         envio.delete({timeout: 5000})
         return
     }
-      
+    
     const data = new Date()
     data.setHours(parseInt(data.getHours() - 3))
    
@@ -1363,18 +1370,15 @@ client.on("message", async message => {
       if(!args[0]){
         //busca.react('<a:carta:814308606711037994>')
         if(comando == "ativar" || comando == "desativar")return
-        const curso = db.get('config').value()
-        let b7 = curso[0].inicio
-        let alura = curso[1].inicio
-        let origamid = curso[2].inicio
-    
+        const curso = db.get('byte').value()
+        
         const tabela = new MessageEmbed()
         .setTitle("<a:globo:813455999847366687> Tabela de cursos")
         .setColor('#47dd93')
         .setDescription(
-        `:white_small_square: [B7](https://alunos.b7web.com.br/login)   ${curso[0].author}      ${b7}\n` +
-        `:white_small_square: [ALURA](https://www.alura.com.br)         ${curso[1].author}      ${alura} \n`+
-        `:white_small_square: [ORIGAMID](https://www.origamid.com)      ${curso[2].author}      ${origamid} `
+        `:white_small_square: [B7](https://alunos.b7web.com.br/login)   ${curso[0].author}      ${curso[0].inicio}\n` +
+        `:white_small_square: [ALURA](https://www.alura.com.br)         ${curso[1].author}      ${curso[1].inicio} \n`+
+        `:white_small_square: [ORIGAMID](https://www.origamid.com)      ${curso[2].author}      ${curso[2].inicio} `
       )
         .setThumbnail('https://cdn.discordapp.com/attachments/777909174453141525/814168340423114873/Logo---Versao-Responsiva.png')
         .setImage('https://cdn.discordapp.com/attachments/777909174453141525/814173638679986217/backgrounCurso.png')
@@ -1384,22 +1388,21 @@ client.on("message", async message => {
         
         return
       }
-      
-      let entrada = args[0]
-      const plataforma = entrada.toUpperCase()
-      const curso = db.get('config').find({id: plataforma}).value()
+      //let entrada = args[0]
+      const plataforma = args[0].toUpperCase()
+      const curso = db.get('byte').find({id: plataforma}).value()
       const day = data.getDate()
 
       if(day != curso.dia){
-        db.get('config').find({id: plataforma}).assign({ativo: 'false'},{author: ""},{inicio: ""},{authorID: ""}, {dia:""}).write()
+        db.get('byte').find({id: plataforma}).assign({ativo: 'false'},{author: "Não utilizada"},{inicio: ""},{authorID: ""}, {dia:""}).write()
       }  
       if(curso.ativo == 'false'){
         if(comando == "desativar"){
           await message.channel.send(`<a:status:813454757506842705> Plataforma já está desativada.`)
           return
         }
-        await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi ativada em nome de ${message.member.displayName}`)
-        db.get('config').find({id: plataforma}).assign({ativo: 'true'},{author: message.member.displayName},{authorID: message.member.id},{inicio: hora}, {dia:day}).write()
+        await message.channel.send(`<a:status:813454757506842705> Plataforma ${plataforma} foi ativada em nome de ${message.member.displayName}`)
+        db.get('byte').find({id: plataforma}).assign({ativo: 'true'},{author: message.member.displayName},{authorID: message.member.id},{inicio: hora}, {dia:day}).write()
         return 
         
       }
@@ -1420,14 +1423,14 @@ client.on("message", async message => {
           return
         }
         if(curso.authorID == message.author.id){
-          db.get('config').find({id: plataforma}).assign({ativo: 'false'},{author: ""},{authorID:""},{inicio:""},{dia:""}).write()
-          await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi desativada em nome de ${message.member.displayName} com ${time} horas e ${timeM} minutos.`)
+          db.get('byte').find({id: plataforma}).assign({ativo: 'false'},{author: "Não utilizada"},{authorID:""},{inicio:""},{dia:""}).write()
+          await message.channel.send(`<a:status:813454757506842705> Plataforma ${plataforma} foi desativada em nome de ${message.member.displayName} com ${time} horas e ${timeM} minutos.`)
           return
         }
         else{
           const member = message.guild.members.cache.get(curso.authorID)
           await member.send(`${message.author} tentou ativar a ${plataforma}, se você não estiver mais usando, por favor vá em um canal no servidor e use o comando **.desativar ${plataforma}**`)
-          await message.channel.send(`<a:status:813454757506842705> A plataforma ${entrada} está sendo usada por ${curso.author} á ${time} horas e ${timeM} minutos`)
+          await message.channel.send(`<a:status:813454757506842705> A plataforma ${plataforma} está sendo usada por ${curso.author} á ${time} horas e ${timeM} minutos`)
         }
         
       }
@@ -1437,9 +1440,9 @@ client.on("message", async message => {
         time = time + timeM
         if(time >= 2){
           const member = message.guild.members.cache.get(curso.authorID)
-          await message.channel.send(`<a:status:813454757506842705> Plataforma ${entrada} foi ativada em nome de ${message.member.displayName}`)
+          await message.channel.send(`<a:status:813454757506842705> Plataforma ${plataforma} foi ativada em nome de ${message.member.displayName}`)
           await member.send(`${message.author} pegou seu acesso a ${plataforma} por está em seu nome a mais de 2 horas.`)
-            db.get('config').find({id: plataforma}).assign({ativo: 'true'},{author: message.member.displayName},{authorID: message.member.id},{inicio: hora}, {dia:day}).write()
+            db.get('byte').find({id: plataforma}).assign({ativo: 'true'},{author: message.member.displayName},{authorID: message.member.id},{inicio: hora}, {dia:day}).write()
           return
         }
         else{
@@ -1479,10 +1482,11 @@ client.on("message", async message => {
     
       let entrada = comando
       let op = args[0]
-      const name = args.slice(1).join(' ')
+      const name = args.slice(1).join(' ').replace(/,/g,'')
       const mes = meses[data.getMonth()]
-      const colaboradores = db.get('config').find({id: 'colaboradores'})
+      const colaboradores = db.get('byte').find({id: 'colaboradores'})
       const membros = colaboradores.value()[mes]
+
       if(comando === "membros"){
         let valor = ''
         if(op){
@@ -1508,7 +1512,7 @@ client.on("message", async message => {
         return
       }
       const plataforma = entrada.toUpperCase()
-      const curso = db.get('config').find({id: plataforma}).value()
+      const curso = db.get('byte').find({id: plataforma}).value()
       let lista = curso.cursos
       if(!op){
         
@@ -1530,7 +1534,7 @@ client.on("message", async message => {
       else if(!name){
         erro.setDescription(`Não informou o nome do curso`)
         const envio = await message.channel.send(erro)
-        erro.delete({timeout: 5000})
+        envio.delete({timeout: 5000})
         return
       }
       else if(op == 'add'){
@@ -1538,7 +1542,7 @@ client.on("message", async message => {
         if(membros.indexOf(message.member.displayName) < 0){
           membros.push(message.member.displayName)
         }
-        await db.get('config').find({id: plataforma}).assign({cursos: lista}).write()
+        await db.get('byte').find({id: plataforma}).assign({cursos: lista}).write()
         await colaboradores.assign({[mes] : membros})
         await message.channel.send(`:white_check_mark: **${name}** adicionado com sucesso`)
         return
@@ -1551,7 +1555,7 @@ client.on("message", async message => {
             return
           }
           lista.splice(lista.indexOf(name), 1)
-          await db.get('config').find({id: plataforma}).assign({cursos: lista}).write()
+          await db.get('byte').find({id: plataforma}).assign({cursos: lista}).write()
           await message.channel.send(`:white_check_mark: **${name}** removido com sucesso`)
           return
       }
@@ -1568,8 +1572,53 @@ client.on("message", async message => {
       await message.author.send(erro)
     }
   }
-  
+  if(comando == "comandos" || comando == "ajuda" || comando == "help"){
+      try{
+      const command = client.channels.cache.get('815014553666453515')
+      if(message.guild.id != '730069592030052376')return
+      if(message.member.roles.cache.has("782232736332251156")){
+        message.reply('Sistema privado para membros da byte')
+        return
+      }
+      if(message.channel.id != '815014553666453515'){
+        const busca1 = await message.fetch("")
+        busca1.delete()
+        const envio = await message.channel.send(`Vá para o canal ${command}`)
+        envio.delete({timeout: 5000})
+        return
+      }
+    
+    const help = new MessageEmbed()
+    .setTitle("<a:globo:813455999847366687> Sistema de controle de acesso aos cursos")
+    .setColor('#47dd93')
+    .setDescription(
+      ':white_small_square: **CONTROLE DE ACESSO AOS CURSOS**\n \n' +
+      '**.tabela** \n' +
+      '**.curso** nome_da_plataforma \n' +
+      '**.c** nome_da_plataforma\n' +
+      '**.plataforma** nome_da_plataforma\n' +
+      '**.ativar** nome_da_plataforma \n' +
+      '**.desativar** nome_da_plataforma\n \n' +
+      ':white_small_square: **ADICIONANDO E REMOVENDO UM CURSO** \n \n' + 
+      '**.alura** add nome_do_curso \n' +
+      '**.b7** add nome_do_curso \n' +
+      '**.origamid** add nome_do_curso \n \n' +
 
+      '**.alura** remove nome_do_curso \n' +
+      '**.b7** remove nome_do_curso \n' +
+      '**.origamid** remove nome_do_curso \n \n \n' +
+      '⚠️**ATENÇÃO:** \n Em controle de acesso aos cursos, se não for passado o parametro *"nome da plataforma"* ele irá retornar a tabela'
+    )
+    .setThumbnail('https://cdn.discordapp.com/attachments/777909174453141525/814168340423114873/Logo---Versao-Responsiva.png')
+    .setFooter('Qualquer problema ou duvida entre em contato com TheLopes#5834')
+    .setTimestamp()
+
+    await message.channel.send(help)
+    }catch{
+      erro.setDescription('Erro ao verificar os comandos')
+      await message.author.send(erro)
+    }
+    }
 });
 
 client.login(config.token);

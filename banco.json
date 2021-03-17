@@ -1,9 +1,9 @@
 {
-  "config": [
+  "byte": [
     {
       "id": "B7",
       "ativo": "false",
-      "author": "",
+      "author": "Não utilizada",
       "authorID": "",
       "inicio": "",
       "dia": "",
@@ -12,20 +12,21 @@
     {
       "id": "ALURA",
       "ativo": "false",
-      "author": "",
+      "author": "Não utilizada",
       "authorID": "",
       "inicio": "",
       "dia": "",
       "cursos": [
         "HTTP: Entendendo a web por baixo dos panos",
         "Linux I: Conhecendo e utilizando o terminal",
-        "Linux II: Programas processos e pacotes"
+        "Linux II: Programas processos e pacotes",
+        "Redes parte 1: Introdução Conceitos e Prática"
       ]
     },
     {
       "id": "ORIGAMID",
       "ativo": "false",
-      "author": "",
+      "author": "Não utilizada",
       "authorID": "",
       "inicio": "",
       "dia": "",
