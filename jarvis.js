@@ -1482,7 +1482,7 @@ client.on("message", async message => {
     
       let entrada = comando
       let op = args[0]
-      const name = args.slice(1).join(' ').replace(/,/g,'')
+      const name = args.slice(1).join(' ')//.replace(/,/g,'')
       const mes = meses[data.getMonth()]
       const colaboradores = db.get('byte').find({id: 'colaboradores'})
       const membros = colaboradores.value()[mes]
@@ -1574,6 +1574,8 @@ client.on("message", async message => {
   }
   if(comando == "comandos" || comando == "ajuda" || comando == "help"){
       try{
+      const busca = await message.fetch("")
+      busca.delete()
       const command = client.channels.cache.get('815014553666453515')
       if(message.guild.id != '730069592030052376')return
       if(message.member.roles.cache.has("782232736332251156")){
@@ -1589,7 +1591,7 @@ client.on("message", async message => {
       }
     
     const help = new MessageEmbed()
-    .setTitle("<a:globo:813455999847366687> Sistema de controle de acesso aos cursos")
+    .setTitle("<a:globo:813455999847366687> Sistema do servidor Byte Jr .")
     .setColor('#47dd93')
     .setDescription(
       ':white_small_square: **CONTROLE DE ACESSO AOS CURSOS**\n \n' +
