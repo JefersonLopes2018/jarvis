@@ -494,8 +494,10 @@ client.on("message", async message => {
       if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872"){
         const imagem = args[0]
         const fonte = args[1]
-        let texto = args.slice(2).join(' ')
-        let canal = client.channels.cache.get('804189572321378325')//("714572433822187571")
+        let entrada = args.slice(2).join(' ')
+        let description = entrada.split('|')[1]
+        let texto = entrada.split('|')[0]
+        let canal = client.channels.cache.get("714572433822187571")
         if(!imagem || !fonte || !texto)return await message.channel.send('Noticia Não passou nas validações')
         const noticia = new MessageEmbed()
         .setTitle(texto)
@@ -506,15 +508,11 @@ client.on("message", async message => {
         if(fonte.includes('https:')){
           noticia.setURL(fonte)
         }
+        if(description){
+          noticia.setDescription(description)
+        }
         const confirm = await message.channel.send(noticia)
           const timer = setInterval(() => {
-            console.log(message.channel.lastMessage.content)
-            if(message.channel.lastMessage.content == 'd'){
-              setTimeout(() => {
-                noticia.setDescription(message.channel.lastMessage.content)
-              },1000)
-              
-          }
             if(message.channel.lastMessage.content == 'enviar'){
                 message.channel.lastMessage.delete()
                 confirm.delete()
@@ -537,7 +535,7 @@ client.on("message", async message => {
             else{
               consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
             }  
-          },60000)
+          },90000)
         
     }
     }catch{
@@ -1625,4 +1623,4 @@ client.on("message", async message => {
     }
 });
 
-client.login(config.tokenDev);
+client.login(config.token);
