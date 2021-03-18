@@ -1464,6 +1464,7 @@ client.on("message", async message => {
     try{
       const busca = await message.fetch("")
       busca.delete()
+      
       const command = client.channels.cache.get('815014553666453515')
       if(message.guild.id != '730069592030052376')return
       if(message.member.roles.cache.has("782232736332251156")){
@@ -1477,12 +1478,13 @@ client.on("message", async message => {
         envio.delete({timeout: 5000})
         return
     }
+    
       const data = new Date()
       const meses = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro']
     
       let entrada = comando
       let op = args[0]
-      const name = args.slice(1).join(' ')//.replace(/,/g,'')
+      const name = args.slice(1).join(' ').replace(/,/g,' ')
       const mes = meses[data.getMonth()]
       const colaboradores = db.get('byte').find({id: 'colaboradores'})
       const membros = colaboradores.value()[mes]
@@ -1623,4 +1625,4 @@ client.on("message", async message => {
     }
 });
 
-client.login(config.token);
+client.login(config.tokenDev);
