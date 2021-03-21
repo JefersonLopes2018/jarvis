@@ -217,7 +217,7 @@ client.on("message", async message => {
           `:white_small_square: <a:globo:813455999847366687> Site do servidor : http://thelopes.glitch.me \n`+
           `:white_small_square: <:covil:781190450488934432> Convite do servidor    :      https://discord.gg/RXNTwcW`)
           
-          .setImage('https://cdn.discordapp.com/attachments/392710044845604865/781181286122389504/info.png')
+          .setImage('https://cdn.discordapp.com/attachments/714573856613859339/823157481756033034/info.png')
           .setFooter('Qualquer duvida entrar em contato com a Equipe Jarvis')
           .setURL('https://discord.gg/RXNTwcW')
           .setTimestamp()
