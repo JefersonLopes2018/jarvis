@@ -513,24 +513,36 @@ client.on("message", async message => {
         }
         const confirm = await message.channel.send(noticia)
           const timer = setInterval(() => {
+      
             if(message.channel.lastMessage.content == 'enviar'){
+              try{
                 message.channel.lastMessage.delete()
                 confirm.delete()
                 canal.send(noticia)
+                .then(consoleServer.send(":incoming_envelope: Noticia postada com sucesso!"))
+              }
+              catch{
+                consoleServer.send('❌ Não foi possivel postar a noticia')
                 clearInterval(timer)
+              }
+                
             }
             else if(message.channel.lastMessage.content[0] == '@' || message.channel.lastMessage.content[1] == '@'){
+                try{
                 message.channel.lastMessage.delete()
                 confirm.delete()
                 canal.send(message.channel.lastMessage.content)
                 canal.send(noticia)
-                clearInterval(timer)
+                .then(consoleServer.send(":incoming_envelope: Noticia postada com sucesso!"))
+                }
+                catch{
+                  consoleServer.send('❌ Não foi possivel postar a noticia')
+                  clearInterval(timer)
+                }
+                
               }
           },1000)
-          
-          if(timer._destroyed == true){
-            consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
-          }
+         
           setTimeout(()=> {
             if(timer._destroyed == false){
               clearInterval(timer)
