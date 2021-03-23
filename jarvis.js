@@ -527,14 +527,15 @@ client.on("message", async message => {
                 clearInterval(timer)
               }
           },1000)
+          
+          if(timer._destroyed == true){
+            consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
+          }
           setTimeout(()=> {
             if(timer._destroyed == false){
               clearInterval(timer)
               confirm.edit(':x: O tempo para enviar a noticia experiou')
-            }
-            else{
-              consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
-            }  
+            } 
           },90000)
         
     }
