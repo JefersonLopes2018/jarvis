@@ -20,7 +20,8 @@
         "HTTP: Entendendo a web por baixo dos panos",
         "Linux I: Conhecendo e utilizando o terminal",
         "Linux II: Programas processos e pacotes",
-        "Redes parte 1: Introdução Conceitos e Prática"
+        "Redes parte 1: Introdução Conceitos e Prática",
+        "Deploy no Amazon EC2: Alta disponibilidade e escalabilidade de uma aplicação"
       ]
     },
     {
@@ -66,11 +67,8 @@
     {
       "id": "rocketseat",
       "valor": "https://github.com/Rocketseat/awesome"
-    },
-    {
-      "id": "jarvis",
-      "valor": "https://github.com/JefersonLopes2018/jarvisDocs"
     }
+   
   ],
   "repositorios": [
     {
@@ -84,7 +82,12 @@
     {
       "id": "corona",
       "valor": "https://github.com/bytejr/corona"
+    },
+    {
+      "id": "fashion-week",
+      "valor": "https://github.com/bytejr/fashion-week"
     }
+
   ],
   "servidores": [
     {

@@ -486,7 +486,6 @@ client.on("message", async message => {
       console.error()
   }
   }
-  
   if(comando == "noticia"){
     try{
       const busca = await message.fetch("noticia")
@@ -893,7 +892,20 @@ client.on("message", async message => {
   }
   }
 ////////////////////////////////////////
+// area de games em construção
 
+if(comando == 'amongus'){
+  const busca = await message.fetch("amongus")
+  busca.delete()
+  game = new MessageEmbed()
+              .setTitle('AmongUs')
+              .setColor(Cor)
+              .setThumbnail('https://cdn.discordapp.com/attachments/425141386266935296/834836954507378708/wonder-day-among-us-21.png')
+              .setURL('https://drive.google.com/uc?export=download&confirm=k1nc&id=1Jem9-Tq1L1_zwqNPwJu9U4kt_sKtcKZ1')
+              .setDescription('[download]'('https://drive.google.com/uc?export=download&confirm=k1nc&id=1Jem9-Tq1L1_zwqNPwJu9U4kt_sKtcKZ1'))
+  await message.channel.send(game)
+
+}
 //cargos 
   if(comando == "newcargo"){
     try{
