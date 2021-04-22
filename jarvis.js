@@ -902,7 +902,7 @@ if(comando == 'amongus'){
               .setColor(Cor)
               .setThumbnail('https://cdn.discordapp.com/attachments/425141386266935296/834836954507378708/wonder-day-among-us-21.png')
               .setURL('https://drive.google.com/uc?export=download&confirm=k1nc&id=1Jem9-Tq1L1_zwqNPwJu9U4kt_sKtcKZ1')
-              .setDescription('[download]'('https://drive.google.com/uc?export=download&confirm=k1nc&id=1Jem9-Tq1L1_zwqNPwJu9U4kt_sKtcKZ1'))
+              .setDescription('[Download](https://drive.google.com/u/0/uc?export=download&confirm=p9Yo&id=1Jem9-Tq1L1_zwqNPwJu9U4kt_sKtcKZ1)')
   await message.channel.send(game)
 
 }
