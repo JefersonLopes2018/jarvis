@@ -496,7 +496,7 @@ client.on("message", async message => {
         let entrada = args.slice(2).join(' ')
         let description = entrada.split('|')[1]
         let texto = entrada.split('|')[0]
-        let canal = client.channels.cache.get("714572433822187571")
+        let canal = client.channels.cache.get('789140955386216450')//("714572433822187571")
         if(!imagem || !fonte || !texto)return await message.channel.send('Noticia Não passou nas validações')
         const noticia = new MessageEmbed()
         .setTitle(texto)
@@ -512,13 +512,15 @@ client.on("message", async message => {
         }
         const confirm = await message.channel.send(noticia)
           const timer = setInterval(() => {
-      
             if(message.channel.lastMessage.content == 'enviar'){
               try{
                 message.channel.lastMessage.delete()
                 confirm.delete()
                 canal.send(noticia)
-                .then(consoleServer.send(":incoming_envelope: Noticia postada com sucesso!"))
+                .then(() => {
+                  clearInterval(timer)
+                  consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
+                })
               }
               catch{
                 consoleServer.send('❌ Não foi possivel postar a noticia')
@@ -532,7 +534,10 @@ client.on("message", async message => {
                 confirm.delete()
                 canal.send(message.channel.lastMessage.content)
                 canal.send(noticia)
-                .then(consoleServer.send(":incoming_envelope: Noticia postada com sucesso!"))
+                .then(() => {
+                  clearInterval(timer)
+                  consoleServer.send(":incoming_envelope: Noticia postada com sucesso!")
+                })
                 }
                 catch{
                   consoleServer.send('❌ Não foi possivel postar a noticia')
@@ -1648,4 +1653,4 @@ if(comando == 'amongus'){
     }
 });
 
-client.login(config.token);
+client.login(config.tokenDev);
