@@ -93,7 +93,7 @@ client.on("message", async message => {
       .setFooter('Covil', 'https://cdn.discordapp.com/attachments/425141386266935296/782306680759124028/icone.png');
   
   if(message.author.bot) return;
-  if (message.channel.type != "dm" && !message.content.startsWith('jarvis') && !message.content.startsWith(config.prefix)){
+  if (message.channel.type != "dm" && !message.content.includes('jarvis') && !message.content.startsWith(config.prefix)){
     if(message.mentions.members.first()) {
       if(message.mentions.members.first().id == '703636663473274962'){
         await message.channel.send(`${message.author} Opa tranquilo?`)
@@ -496,7 +496,7 @@ client.on("message", async message => {
         let entrada = args.slice(2).join(' ')
         let description = entrada.split('|')[1]
         let texto = entrada.split('|')[0]
-        let canal = client.channels.cache.get('789140955386216450')//("714572433822187571")
+        let canal = client.channels.cache.get("714572433822187571")
         if(!imagem || !fonte || !texto)return await message.channel.send('Noticia Não passou nas validações')
         const noticia = new MessageEmbed()
         .setTitle(texto)
@@ -621,13 +621,12 @@ client.on("message", async message => {
     console.error()
   }
   }
-  if(message.content.startsWith('jarvis')) {
+  
+  if(message.content.includes('jarvis')) {
     try{
-      const busca = await message.fetch("jarvis")
-      busca.delete()
-      const mensagem = args.join(' ')
+      const mensagem = message.content
       try{
-        await message.channel.send(`:slight_smile: ${message.author} Opa beleza ?`);
+        await message.channel.send(`<:mario:348175771409448961>`);
         await consoleServer.send(` Mensagem: **${mensagem}** \n Author: **${message.author}**`)
         }
       catch{
@@ -647,9 +646,12 @@ client.on("message", async message => {
       if (message.member.roles.cache.has("463052822175285268") || message.author.id == "334359138110799872" || message.guild.id == '730069592030052376'){
         const arquivo = new MessageAttachment('banco.json')
         await message.author.send(arquivo)
+        if(message.guild.id == '730069592030052376'){
+          consoleServer.send(`🔔 ${message.member.user.tag} acessou o banco de dados`)
+        }
       }
       else{
-        await message.channel.send('Você não está autorizado para ter acesso ao meu banco de dados, me chame no privado pra gente conversar melhor!')
+        await message.channel.send('⚠️ Você não está autorizado para ter acesso ao meu banco de dados, me chame no privado pra gente conversar melhor!')
       }
       
     }
@@ -1653,4 +1655,4 @@ if(comando == 'amongus'){
     }
 });
 
-client.login(config.tokenDev);
+client.login(config.token);
