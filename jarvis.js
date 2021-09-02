@@ -1653,6 +1653,24 @@ if(comando == 'amongus'){
       await message.author.send(erro)
     }
     }
+  // Ajuda no desenvolvimento do Olaph
+  if(comando == "register"){message.delete()
+
+    const Olaph = new FileSync('./users.json');
+    const users = low(Olaph);
+		const member =  message.mentions.members.first() ||  message.guild.members.cache.get(args[0])
+		const cargos = []
+
+		member.roles.cache.map(role => {
+            if(role.name != '@everyone'){
+                cargos.push(role.id)
+            }})
+		
+		users.get('membros').push({
+			id: member.id,
+      		tag: member.user.tag,
+     		cargos: cargos,
+		}).write()}
 });
 
 client.login(config.token);
